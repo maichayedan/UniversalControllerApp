@@ -10,70 +10,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: "1. 叼回灵魂代码"
-        uses: actions/checkout@v4
-        with:
-          path: 'soul_code'
-
-      - name: "2. 环境配置"
+      - name: "环境准备"
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: "3. 设置 Flutter"
+      - name: "Flutter 降临"
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: "4. 彻底清场并重塑地基 (9.0 必胜版)"
+      - name: "彻底清场与重塑地基 (9.0 必胜版)"
         run: |
-          # 删除所有可能的残留，只留下我们需要的汪
           rm -rf ./*
-          flutter create --project-name=universal_controller_app . --platforms android --overwrite
-          
-          # 强力注入全局安卓配置汪
-          cat <<EOF > android/build.gradle
-          allprojects {
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
-          rootProject.buildDir = '../build'
-          subprojects {
-              project.buildDir = "\${rootProject.buildDir}/\${project.name}"
-              afterEvaluate { project ->
-                  if (project.hasProperty('android')) {
-                      project.android {
-                          compileSdkVersion 34
-                          buildToolsVersion '34.0.0'
-                          defaultConfig {
-                              minSdkVersion 21
-                              targetSdkVersion 34
-                          }
-                      }
-                  }
-              }
-          }
-          EOF
+          flutter create --project-name=universal_controller_app --platforms android --overwrite
 
-      - name: "5. 灵魂代码精准回填"
+      - name: "叼回灵魂代码"
+        uses: actions/checkout@v4
+        with:
+          path: 'soul_code'
+
+      - name: "灵魂代码精准回填"
         run: |
-          rm -rf lib
           cp -r soul_code/lib .
           cp soul_code/pubspec.yaml .
-          # 穿上漂亮中文外衣汪
-          sed -i 's/android:label="universal_controller_app"/android:label="体感指挥棒汪！"/g' android/app/src/main/AndroidManifest.xml
+          # 改个名字
+          sed -i 's/android:label="universal_controller_app"/android:label="体感指挥棒9.0" /g' android/app/src/main/AndroidManifest.xml
 
-      - name: "6. 焊接最终 Release APK"
+      - name: "焊接 Release APK"
         run: |
           flutter pub get
           flutter build apk --release --no-tree-shake-icons
 
-      - name: "7. 胜利交付"
+      - name: "胜利交付"
         uses: actions/upload-artifact@v4
         with:
-          name: "体感指挥棒_终极通关版_香喏送达"
+          name: "UniversalController_9.0_Victory"
           path: build/app/outputs/flutter-apk/app-release.apk
