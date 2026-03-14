@@ -1,4 +1,4 @@
-name: "体感指挥棒最终决战 13.0"
+name: "Sensation棒 Build 15.0"
 
 on:
   push:
@@ -10,54 +10,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: "1. 叼回灵魂代码"
+      - name: "1. Checkout Soul Code"
         uses: actions/checkout@v4
         with:
           path: 'soul_code'
 
-      - name: "2. 环境配置"
+      - name: "2. Setup Java Environment"
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: "3. 设置 Flutter"
+      - name: "3. Setup Flutter Environment"
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: "4. 彻底重构地基"
+      - name: "4. Create Clean Project Skeleton"
         run: |
-          # 建立一个完全干净的标准 Flutter 骨架
-          flutter create --project-name=sens_app . --platforms android --overwrite
+          # 使用最纯净的英文名，绝不带任何特殊字符汪
+          flutter create --project-name=sens_controller . --platforms android --overwrite
           rm -rf lib
           cp -r soul_code/lib .
           cp soul_code/pubspec.yaml .
 
-      - name: "5. 全域强力降维打击 (这一次必胜！汪！)"
+      - name: "5. Force Android SDK 34 (Ultimate Fix)"
         run: |
-          # 先拉取插件汪
-          flutter pub get
-          
-          # 【核弹级修复】直接修改 Flutter 缓存里的插件代码，彻底根除版本缺失问题汪！
-          find $FLUTTER_HOME -name "build.gradle" -exec sed -i 's/compileSdkVersion .*/compileSdkVersion 34/g' {} + || true
-          
-          # 【强力注入】修改本项目所有 build.gradle，焊死版本号汪！
+          # 这一次我们直接修改全局环境变量汪！
+          flutter config --android-sdk /usr/local/lib/android/sdk
+          # 暴力强制所有 Gradle 模块使用 SDK 34 汪
           find . -name "build.gradle" -exec sed -i 's/compileSdkVersion .*/compileSdkVersion 34/g' {} +
           find . -name "build.gradle" -exec sed -i 's/targetSdkVersion .*/targetSdkVersion 34/g' {} +
-          find . -name "build.gradle" -exec sed -i 's/minSdkVersion .*/minSdkVersion 21/g' {} +
-          
-          # 修改 App 内部显示名字
-          sed -i 's/android:label="sens_app"/android:label="体感指挥棒汪！"/g' android/app/src/main/AndroidManifest.xml
 
-      - name: "6. 焊接最终 Release APK"
+      - name: "6. Build Release APK"
         run: |
-          # 即使有警告也强制前进汪！
-          flutter build apk --release --no-tree-shake-icons --split-per-abi
+          flutter pub get
+          flutter build apk --release --no-tree-shake-icons
 
-      - name: "7. 胜利的果实"
+      - name: "7. Victory Delivery"
         uses: actions/upload-artifact@v4
         with:
-          name: "体感指挥棒_第12次的奇迹_最终版"
+          name: "Sens_Controller_Final_Build"
           path: build/app/outputs/flutter-apk/app-release.apk
