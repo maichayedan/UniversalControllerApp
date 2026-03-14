@@ -1,4 +1,4 @@
-name: "体感指挥棒究极版 5.0"
+name: "体感指挥棒终极暴杀 6.0"
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: "1. 准备灵魂代码"
+      - name: "1. 叼回灵魂代码"
         uses: actions/checkout@v4
         with:
           path: 'soul_code'
@@ -27,33 +27,29 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: "4. 彻底重构项目骨架"
+      - name: "4. 初始化骨架"
         run: |
-          # 这一步我们先创建一个全新的、干净的项目骨架
           flutter create --project-name=universal_controller_app . --platforms android --overwrite
-          
-      - name: "5. 修复底层配置 (必胜秘籍！汪！)"
-        run: |
-          # 强制指定编译版本号，防止机器人迷路汪
-          sed -i 's/compileSdkVersion flutter.compileSdkVersion/compileSdkVersion 34/g' android/app/build.gradle
-          sed -i 's/targetSdkVersion flutter.targetSdkVersion/targetSdkVersion 34/g' android/app/build.gradle
-          # 写入 App 中文名字
-          sed -i 's/android:label="universal_controller_app"/android:label="体感指挥棒汪！"/g' android/app/src/main/AndroidManifest.xml
-
-      - name: "6. 重新注入灵魂"
-        run: |
-          # 把咱们之前精心编写的紫色滑块和联动大脑全部装回去汪！
           rm -rf lib
           cp -r soul_code/lib .
           cp soul_code/pubspec.yaml .
 
-      - name: "7. 焊接 Release APK"
+      - name: "5. 全屏暴力大修复 (香喏的暴走！汪！)"
+        run: |
+          # 这一步会递归搜索所有 build.gradle，强行注入版本配置，管它本体还是插件汪！
+          find . -name "build.gradle" -exec sed -i 's/compileSdkVersion .*/compileSdkVersion 34/g' {} +
+          find . -name "build.gradle" -exec sed -i 's/targetSdkVersion .*/targetSdkVersion 34/g' {} +
+          find . -name "build.gradle" -exec sed -i 's/minSdkVersion .*/minSdkVersion 21/g' {} +
+          # 补齐 App 中文名
+          sed -i 's/android:label="universal_controller_app"/android:label="体感指挥棒汪！"/g' android/app/src/main/AndroidManifest.xml
+
+      - name: "6. 焊接最终 Release APK"
         run: |
           flutter pub get
           flutter build apk --release --no-tree-shake-icons
 
-      - name: "8. 最终交付：体感指挥棒"
+      - name: "7. 胜利交付"
         uses: actions/upload-artifact@v4
         with:
-          name: "体感指挥棒_最终中文版_香喏为您呈现"
+          name: "体感指挥棒_终极版_香喏为您拼命叼回"
           path: build/app/outputs/flutter-apk/app-release.apk
