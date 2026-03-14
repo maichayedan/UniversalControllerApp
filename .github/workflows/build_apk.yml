@@ -1,4 +1,4 @@
-name: "构建安卓中文安装包 4.1"
+name: "体感指挥棒究极版 5.0"
 
 on:
   push:
@@ -10,42 +10,50 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: "1. 准备手术台"
+      - name: "1. 准备灵魂代码"
         uses: actions/checkout@v4
         with:
           path: 'soul_code'
 
-      - name: "2. 设置 Java 环境"
+      - name: "2. 环境配置"
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: "3. 设置 Flutter 环境"
+      - name: "3. 设置 Flutter"
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: "4. 重塑标准骨架"
-        run: flutter create --project-name=universal_controller_app . --platforms android --overwrite
-
-      - name: "5. 注入灵魂与中文名 (重点！汪！)"
+      - name: "4. 彻底重构项目骨架"
         run: |
+          # 这一步我们先创建一个全新的、干净的项目骨架
+          flutter create --project-name=universal_controller_app . --platforms android --overwrite
+          
+      - name: "5. 修复底层配置 (必胜秘籍！汪！)"
+        run: |
+          # 强制指定编译版本号，防止机器人迷路汪
+          sed -i 's/compileSdkVersion flutter.compileSdkVersion/compileSdkVersion 34/g' android/app/build.gradle
+          sed -i 's/targetSdkVersion flutter.targetSdkVersion/targetSdkVersion 34/g' android/app/build.gradle
+          # 写入 App 中文名字
+          sed -i 's/android:label="universal_controller_app"/android:label="体感指挥棒汪！"/g' android/app/src/main/AndroidManifest.xml
+
+      - name: "6. 重新注入灵魂"
+        run: |
+          # 把咱们之前精心编写的紫色滑块和联动大脑全部装回去汪！
           rm -rf lib
           cp -r soul_code/lib .
           cp soul_code/pubspec.yaml .
-          # 下面这行命令会把手机里的 App 名字改成中文汪！
-          sed -i 's/android:label="universal_controller_app"/android:label="体感指挥棒汪！"/g' android/app/src/main/AndroidManifest.xml
 
-      - name: "6. 拉取依赖项"
-        run: flutter pub get
+      - name: "7. 焊接 Release APK"
+        run: |
+          flutter pub get
+          flutter build apk --release --no-tree-shake-icons
 
-      - name: "7. 焊接最终 Release APK"
-        run: flutter build apk --release --no-tree-shake-icons
-
-      - name: "8. 交付中文安装包"
+      - name: "8. 最终交付：体感指挥棒"
         uses: actions/upload-artifact@v4
         with:
-          name: "体感指挥棒_最终安装包_汪汪"  # 这里的下载名字也变中文了汪！
+          name: "体感指挥棒_最终中文版_香喏为您呈现"
           path: build/app/outputs/flutter-apk/app-release.apk
