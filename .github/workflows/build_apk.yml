@@ -1,4 +1,4 @@
-name: "Build Android APK 3.0"
+name: "构建安卓中文安装包 4.1"
 
 on:
   push:
@@ -10,32 +10,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: "Checkout Code"
+      - name: "1. 准备手术台"
         uses: actions/checkout@v4
+        with:
+          path: 'soul_code'
 
-      - name: "Setup Java"
+      - name: "2. 设置 Java 环境"
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: "Setup Flutter"
+      - name: "3. 设置 Flutter 环境"
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: "Force Create Android Skeleton (Small Case)"
+      - name: "4. 重塑标准骨架"
         run: flutter create --project-name=universal_controller_app . --platforms android --overwrite
 
-      - name: "Install Dependencies"
+      - name: "5. 注入灵魂与中文名 (重点！汪！)"
+        run: |
+          rm -rf lib
+          cp -r soul_code/lib .
+          cp soul_code/pubspec.yaml .
+          # 下面这行命令会把手机里的 App 名字改成中文汪！
+          sed -i 's/android:label="universal_controller_app"/android:label="体感指挥棒汪！"/g' android/app/src/main/AndroidManifest.xml
+
+      - name: "6. 拉取依赖项"
         run: flutter pub get
 
-      - name: "Build Release APK"
+      - name: "7. 焊接最终 Release APK"
         run: flutter build apk --release --no-tree-shake-icons
 
-      - name: "Upload APK"
+      - name: "8. 交付中文安装包"
         uses: actions/upload-artifact@v4
         with:
-          name: universal-controller-apk
+          name: "体感指挥棒_最终安装包_汪汪"  # 这里的下载名字也变中文了汪！
           path: build/app/outputs/flutter-apk/app-release.apk
