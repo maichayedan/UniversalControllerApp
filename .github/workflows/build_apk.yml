@@ -1,4 +1,4 @@
-name: "体感指挥官最终必胜打包"
+name: "体感指挥官_终极统御_22.0"
 
 on:
   push:
@@ -27,28 +27,46 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: "4. 纯净重塑骨架"
+      - name: "4. 初始化骨架"
         run: |
-          # 建立一个完全干净的标准 Flutter 骨架
           flutter create --project-name=sens_app . --platforms android --overwrite
           rm -rf lib && cp -r soul_code/lib .
           cp soul_code/pubspec.yaml .
-          # 把手机桌面名字改成中文汪！
+
+      - name: "5. 打入定海神针 (统御所有插件！汪！)"
+        run: |
+          # 这一次我们直接在根目录的构建脚本里下一道死命令汪！
+          # 不管哪个插件报错，通通强制升级到 SDK 34！
+          cat <<EOF >> android/build.gradle
+          subprojects {
+              afterEvaluate { project ->
+                  if (project.hasProperty('android')) {
+                      project.android {
+                          if (namespace == null) {
+                              namespace = "com.example.sens_app.\${project.name.replaceAll('-', '_')}"
+                          }
+                          compileSdkVersion 34
+                          buildToolsVersion "34.0.0"
+                          defaultConfig {
+                              minSdkVersion 21
+                              targetSdkVersion 34
+                          }
+                      }
+                  }
+              }
+          }
+          EOF
+          
+          # 顺便把手机里的 App 名字改好汪
           sed -i 's/android:label="sens_app"/android:label="体感指挥官汪！"/g' android/app/src/main/AndroidManifest.xml
 
-      - name: "5. 全域强力降服插件"
+      - name: "6. 最后的强力焊接"
         run: |
           flutter pub get
-          # 焊死版本号，不准插件乱跳汪！
-          find . -name "build.gradle" -exec sed -i 's/compileSdkVersion .*/compileSdkVersion 34/g' {} +
-          find . -name "build.gradle" -exec sed -i 's/targetSdkVersion .*/targetSdkVersion 34/g' {} +
-
-      - name: "6. 焊接最终 Release APK"
-        run: |
           flutter build apk --release --no-tree-shake-icons
 
       - name: "7. 胜利叼回"
         uses: actions/upload-artifact@v4
         with:
-          name: "体感指挥官_最终版_请主人查收"
+          name: "体感指挥官_22_0_究极成品"
           path: build/app/outputs/flutter-apk/app-release.apk
