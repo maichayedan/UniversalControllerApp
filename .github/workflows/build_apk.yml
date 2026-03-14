@@ -1,4 +1,4 @@
-name: "体感指挥棒终极暴杀 6.0"
+name: "体感指挥棒降维打击 7.0"
 
 on:
   push:
@@ -27,29 +27,47 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: "4. 初始化骨架"
+      - name: "4. 初始化骨架并拉取依赖 (第一波打击)"
         run: |
           flutter create --project-name=universal_controller_app . --platforms android --overwrite
           rm -rf lib
           cp -r soul_code/lib .
           cp soul_code/pubspec.yaml .
+          flutter pub get
 
-      - name: "5. 全屏暴力大修复 (香喏的暴走！汪！)"
+      - name: "5. 全域版本号注入 (降维打击！汪！)"
         run: |
-          # 这一步会递归搜索所有 build.gradle，强行注入版本配置，管它本体还是插件汪！
-          find . -name "build.gradle" -exec sed -i 's/compileSdkVersion .*/compileSdkVersion 34/g' {} +
-          find . -name "build.gradle" -exec sed -i 's/targetSdkVersion .*/targetSdkVersion 34/g' {} +
-          find . -name "build.gradle" -exec sed -i 's/minSdkVersion .*/minSdkVersion 21/g' {} +
+          # 这一次我们直接修改全局配置，让所有插件都强制使用主项目的版本号汪！
+          echo "subprojects {
+              afterEvaluate { project ->
+                  if (project.hasProperty('android')) {
+                      project.android {
+                          if (namespace == null) {
+                              namespace project.group
+                          }
+                          compileSdkVersion 34
+                          buildToolsVersion '34.0.0'
+                          defaultConfig {
+                              minSdkVersion 21
+                              targetSdkVersion 34
+                          }
+                      }
+                  }
+              }
+          }" >> android/build.gradle
+          
           # 补齐 App 中文名
           sed -i 's/android:label="universal_controller_app"/android:label="体感指挥棒汪！"/g' android/app/src/main/AndroidManifest.xml
 
       - name: "6. 焊接最终 Release APK"
         run: |
+          # 强制清理并构建汪
+          flutter clean
           flutter pub get
           flutter build apk --release --no-tree-shake-icons
 
       - name: "7. 胜利交付"
         uses: actions/upload-artifact@v4
         with:
-          name: "体感指挥棒_终极版_香喏为您拼命叼回"
+          name: "体感指挥棒_最终版本_香喏为您拼命叼回"
           path: build/app/outputs/flutter-apk/app-release.apk
