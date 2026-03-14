@@ -1,4 +1,4 @@
-name: "Sensation棒 Build 15.0"
+name: "体感指挥17.0 (Ultimate Auto-Victory)"
 
 on:
   push:
@@ -9,111 +9,52 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    steps:name: "Sensation棒 Build 16.0 (Ultimate Auto-Fix)"
-
-    on:
-      push:
-          branches: [ "main", "master" ]
-            workflow_dispatch:
-
-            jobs:
-              build:
-                  runs-on: ubuntu-latest
-
-                      steps:
-                            - name: "1. Checkout Soul Code"
-                                    uses: actions/checkout@v4
-                                            with:
-                                                      path: 'soul_code'
-
-                                                            - name: "2. Setup Java Environment"
-                                                                    uses: actions/setup-java@v4
-                                                                            with:
-                                                                                      distribution: 'zulu'
-                                                                                                java-version: '17'
-
-                                                                                                      - name: "3. Setup Flutter Environment"
-                                                                                                              uses: subosito/flutter-action@v2
-                                                                                                                      with:
-                                                                                                                                flutter-version: '3.19.0'
-                                                                                                                                          channel: 'stable'
-                                                                                                                                          
-                                                                                                                                                - name: "4. Create Clean Project Skeleton"
-                                                                                                                                                        run: |
-                                                                                                                                                                  flutter create --project-name=sens_controller --platforms android --overwrite .
-                                                                                                                                                                            rm -rf lib
-                                                                                                                                                                                      cp -r soul_code/lib .
-                                                                                                                                                                                                cp soul_code/pubspec.yaml .
-                                                                                                                                                                                                
-                                                                                                                                                                                                      - name: "5. Brute Force Fix Gradle & SDK 34 (Fix 16.0)"
-                                                                                                                                                                                                              run: |
-                                                                                                                                                                                                                        echo "Starting Brute Force Fix 16.0..."
-                                                                                                                                                                                                                                  # 1. 暴力修改所有 build.gradle 的 SDK 版本
-                                                                                                                                                                                                                                            find . -name "build.gradle" -exec sed -i 's/compileSdkVersion [0-9]*/compileSdkVersion 34/g' {} +
-                                                                                                                                                                                                                                                      find . -name "build.gradle" -exec sed -i 's/targetSdkVersion [0-9]*/targetSdkVersion 34/g' {} +
-                                                                                                                                                                                                                                                                
-                                                                                                                                                                                                                                                                          # 2. 注入 namespace 防止 Gradle 8.0+ 报错 (通用占位符)
-                                                                                                                                                                                                                                                                                    find android/app -name "build.gradle" -exec sed -i '/android {/a \\    namespace "com.example.sens_controller"' {} +
-                                                                                                                                                                                                                                                                                              
-                                                                                                                                                                                                                                                                                                        # 3. 修复 Gradle JVM 堆栈问题
-                                                                                                                                                                                                                                                                                                                  mkdir -p android
-                                                                                                                                                                                                                                                                                                                            echo "org.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=512m" >> android/gradle.properties
-                                                                                                                                                                                                                                                                                                                                      
-                                                                                                                                                                                                                                                                                                                                                flutter config --android-sdk /usr/local/lib/android/sdk
-                                                                                                                                                                                                                                                                                                                                                          yes | flutter doctor --android-licenses
-                                                                                                                                                                                                                                                                                                                                                          
-                                                                                                                                                                                                                                                                                                                                                                - name: "6. Get Dependencies"
-                                                                                                                                                                                                                                                                                                                                                                        run: flutter pub get
-                                                                                                                                                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                                                                                                                                              - name: "7. Build APK"
-                                                                                                                                                                                                                                                                                                                                                                                      run: flutter build apk --release
-                                                                                                                                                                                                                                                                                                                                                                                      
-                                                                                                                                                                                                                                                                                                                                                                                            - name: "8. Upload APK"
-                                                                                                                                                                                                                                                                                                                                                                                                    uses: actions/upload-artifact@v4
-                                                                                                                                                                                                                                                                                                                                                                                                            with:
-                                                                                                                                                                                                                                                                                                                                                                                                                      name: release-apk
-                                                                                                                                                                                                                                                                                                                                                                                                                                path: build/app/outputs/flutter-apk/*.apk
-                                                                                                                                                                                                                                                                                                                                                                                                                                
-      - name: "1. Checkout Soul Code"
+    steps:
+      - name: "1. 叼回核心逻辑"
         uses: actions/checkout@v4
         with:
           path: 'soul_code'
 
-      - name: "2. Setup Java Environment"
+      - name: "2. 环境配置"
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: "3. Setup Flutter Environment"
+      - name: "3. 设置 Flutter"
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: "4. Create Clean Project Skeleton"
+      - name: "4. 纯净重塑 (17.0 必胜)"
         run: |
-          # 使用最纯净的英文名，绝不带任何特殊字符汪
-          flutter create --project-name=sens_controller . --platforms android --overwrite
+          # 这一次我们只创建一个干净的源码工程
+          flutter create --project-name=sens_controller --platforms android --overwrite .
           rm -rf lib
           cp -r soul_code/lib .
           cp soul_code/pubspec.yaml .
+          # 给 App 贴上中文标签
+          sed -i 's/android:label="sens控制"/android:label="体感指挥官必胜！"/g' android/app/src/main/AndroidManifest.xml
 
-      - name: "5. Force Android SDK 34 (Ultimate Fix)"
+      - name: "5. 暴力修正 SDK & Gradle (17.0 注入)"
         run: |
-          # 这一次我们直接修改全局环境变量汪！
-          flutter config --android-sdk /usr/local/lib/android/sdk
-          # 暴力强制所有 Gradle 模块使用 SDK 34 汪
-          find . -name "build.gradle" -exec sed -i 's/compileSdkVersion .*/compileSdkVersion 34/g' {} +
-          find . -name "build.gradle" -exec sed -i 's/targetSdkVersion .*/targetSdkVersion 34/g' {} +
+          echo "强制注入 17.0 补丁..."
+          # 遍历所有 build.gradle 强制修改 SDK 版本
+          find . -name "build.gradle" -exec sed -i 's/compileSdkVersion [0-9]*/compileSdkVersion 34/g' {} +
+          find . -name "build.gradle" -exec sed -i 's/targetSdkVersion [0-9]*/targetSdkVersion 34/g' {} +
+          find . -name "build.gradle" -exec sed -i 's/minSdkVersion [0-9]*/minSdkVersion 21/g' {} +
+          # 注入 namespace 修复 Gradle 8.0+ 报错
+          find android/app -name "build.gradle" -exec sed -i '/android {/a \    namespace "com.example.sens_controller"' {} +
 
-      - name: "6. Build Release APK"
-        run: |
-          flutter pub get
-          flutter build apk --release --no-tree-shake-icons
+      - name: "6. Get Dependencies"
+        run: flutter pub get
 
-      - name: "7. Victory Delivery"
+      - name: "7. Build APK"
+        run: flutter build apk --release
+
+      - name: "8. Upload APK"
         uses: actions/upload-artifact@v4
         with:
-          name: "Sens_Controller_Final_Build"
+          name: release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
