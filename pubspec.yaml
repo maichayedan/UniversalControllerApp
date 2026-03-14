@@ -19,5 +19,3 @@ environment:
 
                       flutter:
                         uses-material-design: true
-
-                        
