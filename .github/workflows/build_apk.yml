@@ -1,4 +1,4 @@
-name: "体感指挥棒降维打击 7.0"
+name: "体感指挥棒涅槃重生 8.0"
 
 on:
   push:
@@ -27,47 +27,54 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: "4. 初始化骨架并拉取依赖 (第一波打击)"
+      - name: "4. 全自动骨架补完 (涅槃版)"
         run: |
+          # 这一次香喏直接用最土但最稳的方法，让 Flutter 自己把地基打好汪
           flutter create --project-name=universal_controller_app . --platforms android --overwrite
-          rm -rf lib
-          cp -r soul_code/lib .
-          cp soul_code/pubspec.yaml .
-          flutter pub get
-
-      - name: "5. 全域版本号注入 (降维打击！汪！)"
-        run: |
-          # 这一次我们直接修改全局配置，让所有插件都强制使用主项目的版本号汪！
-          echo "subprojects {
+          
+          # 这一步最关键！在一切开始前，强制指定一个万能的版本号配置汪
+          cat <<EOF > android/build.gradle
+          allprojects {
+              repositories {
+                  google()
+                  mavenCentral()
+              }
+          }
+          rootProject.buildDir = '../build'
+          subprojects {
+              project.buildDir = "\${rootProject.buildDir}/\${project.name}"
               afterEvaluate { project ->
                   if (project.hasProperty('android')) {
                       project.android {
-                          if (namespace == null) {
-                              namespace project.group
-                          }
                           compileSdkVersion 34
                           buildToolsVersion '34.0.0'
-                          defaultConfig {
-                              minSdkVersion 21
-                              targetSdkVersion 34
-                          }
                       }
                   }
               }
-          }" >> android/build.gradle
-          
-          # 补齐 App 中文名
+          }
+          subprojects {
+              project.evaluationDependsOn(':app')
+          }
+          tasks.register("clean", Delete) {
+              delete rootProject.buildDir
+          }
+          EOF
+
+      - name: "5. 灵魂精准归位"
+        run: |
+          rm -rf lib
+          cp -r soul_code/lib .
+          cp soul_code/pubspec.yaml .
+          # 给 App 穿上漂亮的中文外衣汪
           sed -i 's/android:label="universal_controller_app"/android:label="体感指挥棒汪！"/g' android/app/src/main/AndroidManifest.xml
 
-      - name: "6. 焊接最终 Release APK"
+      - name: "6. 焊接 Release APK"
         run: |
-          # 强制清理并构建汪
-          flutter clean
           flutter pub get
           flutter build apk --release --no-tree-shake-icons
 
       - name: "7. 胜利交付"
         uses: actions/upload-artifact@v4
         with:
-          name: "体感指挥棒_最终版本_香喏为您拼命叼回"
+          name: "体感指挥棒_涅槃重生版_香喏送达"
           path: build/app/outputs/flutter-apk/app-release.apk
