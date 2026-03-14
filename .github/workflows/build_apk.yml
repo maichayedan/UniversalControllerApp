@@ -1,4 +1,4 @@
-name: "体感指挥棒终极通关 9.0"
+name: "体感指挥棒归真版 10.0"
 
 on:
   push:
@@ -10,42 +10,43 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: "环境准备"
+      - name: "1. 叼回核心逻辑"
+        uses: actions/checkout@v4
+        with:
+          path: 'soul_code'
+
+      - name: "2. 环境配置"
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: "Flutter 降临"
+      - name: "3. 设置 Flutter"
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: "彻底清场与重塑地基 (9.0 必胜版)"
+      - name: "4. 纯净重塑 (10.0 必胜)"
         run: |
-          rm -rf ./*
-          flutter create --project-name=universal_controller_app --platforms android --overwrite
-
-      - name: "叼回灵魂代码"
-        uses: actions/checkout@v4
-        with:
-          path: 'soul_code'
-
-      - name: "灵魂代码精准回填"
+          # 这一次我们只创建一个干净的默认工程名汪
+          flutter create --project-name=sens棒 . --platforms android --overwrite
+          
+      - name: "5. 注入灵魂与中文名"
         run: |
+          rm -rf lib
           cp -r soul_code/lib .
           cp soul_code/pubspec.yaml .
-          # 改个名字
-          sed -i 's/android:label="universal_controller_app"/android:label="体感指挥棒9.0" /g' android/app/src/main/AndroidManifest.xml
+          # 给 App 贴上中文标签汪
+          sed -i 's/android:label="sens棒"/android:label="体感指挥棒汪！"/g' android/app/src/main/AndroidManifest.xml
 
-      - name: "焊接 Release APK"
+      - name: "6. 焊接最终 Release APK"
         run: |
           flutter pub get
           flutter build apk --release --no-tree-shake-icons
 
-      - name: "胜利交付"
+      - name: "7. 胜利交付"
         uses: actions/upload-artifact@v4
         with:
-          name: "UniversalController_9.0_Victory"
+          name: "体感指挥棒_一键通关版_香喏送达"
           path: build/app/outputs/flutter-apk/app-release.apk
