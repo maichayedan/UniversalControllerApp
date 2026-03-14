@@ -1,4 +1,4 @@
-name: "体感指挥17.0 (Ultimate Auto-Victory)"
+name: "体感指挥官最终必胜打包"
 
 on:
   push:
@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: "1. 叼回核心逻辑"
+      - name: "1. 叼回灵魂代码"
         uses: actions/checkout@v4
         with:
           path: 'soul_code'
@@ -27,34 +27,28 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: "4. 纯净重塑 (17.0 必胜)"
+      - name: "4. 纯净重塑骨架"
         run: |
-          # 这一次我们只创建一个干净的源码工程
-          flutter create --project-name=sens_controller --platforms android --overwrite .
-          rm -rf lib
-          cp -r soul_code/lib .
+          # 建立一个完全干净的标准 Flutter 骨架
+          flutter create --project-name=sens_app . --platforms android --overwrite
+          rm -rf lib && cp -r soul_code/lib .
           cp soul_code/pubspec.yaml .
-          # 给 App 贴上中文标签
-          sed -i 's/android:label="sens控制"/android:label="体感指挥官必胜！"/g' android/app/src/main/AndroidManifest.xml
+          # 把手机桌面名字改成中文汪！
+          sed -i 's/android:label="sens_app"/android:label="体感指挥官汪！"/g' android/app/src/main/AndroidManifest.xml
 
-      - name: "5. 暴力修正 SDK & Gradle (17.0 注入)"
+      - name: "5. 全域强力降服插件"
         run: |
-          echo "强制注入 17.0 补丁..."
-          # 遍历所有 build.gradle 强制修改 SDK 版本
-          find . -name "build.gradle" -exec sed -i 's/compileSdkVersion [0-9]*/compileSdkVersion 34/g' {} +
-          find . -name "build.gradle" -exec sed -i 's/targetSdkVersion [0-9]*/targetSdkVersion 34/g' {} +
-          find . -name "build.gradle" -exec sed -i 's/minSdkVersion [0-9]*/minSdkVersion 21/g' {} +
-          # 注入 namespace 修复 Gradle 8.0+ 报错
-          find android/app -name "build.gradle" -exec sed -i '/android {/a \    namespace "com.example.sens_controller"' {} +
+          flutter pub get
+          # 焊死版本号，不准插件乱跳汪！
+          find . -name "build.gradle" -exec sed -i 's/compileSdkVersion .*/compileSdkVersion 34/g' {} +
+          find . -name "build.gradle" -exec sed -i 's/targetSdkVersion .*/targetSdkVersion 34/g' {} +
 
-      - name: "6. Get Dependencies"
-        run: flutter pub get
+      - name: "6. 焊接最终 Release APK"
+        run: |
+          flutter build apk --release --no-tree-shake-icons
 
-      - name: "7. Build APK"
-        run: flutter build apk --release
-
-      - name: "8. Upload APK"
+      - name: "7. 胜利叼回"
         uses: actions/upload-artifact@v4
         with:
-          name: release-apk
+          name: "体感指挥官_最终版_请主人查收"
           path: build/app/outputs/flutter-apk/app-release.apk
