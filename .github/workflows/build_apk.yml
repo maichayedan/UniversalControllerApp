@@ -1,4 +1,4 @@
-name: "体感指挥棒涅槃重生 8.0"
+name: "体感指挥棒终极通关 9.0"
 
 on:
   push:
@@ -27,12 +27,13 @@ jobs:
           flutter-version: '3.19.0'
           channel: 'stable'
 
-      - name: "4. 全自动骨架补完 (涅槃版)"
+      - name: "4. 彻底清场并重塑地基 (9.0 必胜版)"
         run: |
-          # 这一次香喏直接用最土但最稳的方法，让 Flutter 自己把地基打好汪
+          # 删除所有可能的残留，只留下我们需要的汪
+          rm -rf ./*
           flutter create --project-name=universal_controller_app . --platforms android --overwrite
           
-          # 这一步最关键！在一切开始前，强制指定一个万能的版本号配置汪
+          # 强力注入全局安卓配置汪
           cat <<EOF > android/build.gradle
           allprojects {
               repositories {
@@ -48,27 +49,25 @@ jobs:
                       project.android {
                           compileSdkVersion 34
                           buildToolsVersion '34.0.0'
+                          defaultConfig {
+                              minSdkVersion 21
+                              targetSdkVersion 34
+                          }
                       }
                   }
               }
           }
-          subprojects {
-              project.evaluationDependsOn(':app')
-          }
-          tasks.register("clean", Delete) {
-              delete rootProject.buildDir
-          }
           EOF
 
-      - name: "5. 灵魂精准归位"
+      - name: "5. 灵魂代码精准回填"
         run: |
           rm -rf lib
           cp -r soul_code/lib .
           cp soul_code/pubspec.yaml .
-          # 给 App 穿上漂亮的中文外衣汪
+          # 穿上漂亮中文外衣汪
           sed -i 's/android:label="universal_controller_app"/android:label="体感指挥棒汪！"/g' android/app/src/main/AndroidManifest.xml
 
-      - name: "6. 焊接 Release APK"
+      - name: "6. 焊接最终 Release APK"
         run: |
           flutter pub get
           flutter build apk --release --no-tree-shake-icons
@@ -76,5 +75,5 @@ jobs:
       - name: "7. 胜利交付"
         uses: actions/upload-artifact@v4
         with:
-          name: "体感指挥棒_涅槃重生版_香喏送达"
+          name: "体感指挥棒_终极通关版_香喏送达"
           path: build/app/outputs/flutter-apk/app-release.apk
