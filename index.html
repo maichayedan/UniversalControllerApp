@@ -3,138 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>感官指挥官·AI 实验室 汪！</title>
+    <title>感官指挥官·旗舰实验室 汪！</title>
     <style>
-        :root { --bg: #050507; --purple: #a855f7; --blue: #3b82f6; --red: #ef4444; --green: #22c55e; }
-        body { background: var(--bg); color: #e2e8f0; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 10px; margin: 0; }
-        .device-card { background: linear-gradient(145deg, #1a1a1e, #111114); border-radius: 24px; padding: 18px; width: 95%; max-width: 480px; border: 1px solid rgba(255,255,255,0.08); margin-bottom: 15px; }
-        
-        /* AI 问答弹窗汪 */
-        #ai-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 100; display: flex; align-items: center; justify-content: center; }
-        .ai-box { background: #1e1e26; padding: 30px; border-radius: 30px; border: 2px solid var(--purple); width: 80%; max-width: 400px; text-align: center; }
-        
-        .param-row { margin: 12px 0; }
-        .label-row { display: flex; justify-content: space-between; font-size: 13px; color: #94a3b8; }
-        .btn { border-radius: 12px; border: none; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; }
-        .btn-act { padding: 12px; background: var(--purple); flex: 1; margin: 5px; }
-        .btn-mode { padding: 10px; background: #334155; margin: 5px; font-size: 12px; border: 1px solid transparent; }
-        .btn-mode.active { border-color: var(--purple); background: rgba(168, 85, 247, 0.2); }
-        .btn-stop { background: var(--red); width: 100%; height: 60px; margin-top: 20px; font-size: 20px; }
-        .pressure-display { font-size: 56px; font-weight: 900; color: var(--blue); }
+        :root { --bg: #08080a; --purple: #a855f7; --blue: #3b82f6; --red: #ef4444; --green: #22c55e; }
+        body { background: var(--bg); color: #f1f5f9; font-family: 'Inter', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 15px; margin: 0; }
+        .card { background: rgba(255,255,255,0.03); border-radius: 24px; padding: 20px; width: 95%; max-width: 480px; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 15px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .val { color: var(--purple); font-weight: 900; font-family: monospace; }
+        input[type=range] { width: 100%; accent-color: var(--purple); margin: 10px 0; }
+        .btn { border-radius: 12px; border: none; font-weight: bold; cursor: pointer; color: white; transition: 0.2s; padding: 12px; }
+        .btn-conn { background: #334155; font-size: 12px; padding: 6px 12px; }
+        .btn-p { background: var(--purple); flex: 1; }
+        .btn-blue { background: var(--blue); width: 100%; margin-top: 10px; }
+        .btn-save { background: var(--green); width: 100px; }
+        .btn-stop { background: var(--red); width: 100%; height: 60px; font-size: 20px; margin-top: 20px; }
+        #ai-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+        .preset-item { display: flex; justify-content: space-between; background: rgba(255,255,255,0.05); margin: 5px 0; padding: 10px; border-radius: 10px; font-size: 14px; }
     </style>
 </head>
 <body>
     <!-- AI 问答汪 -->
     <div id="ai-overlay">
-        <div class="ai-box">
+        <div style="text-align: center; background: #1e1e26; padding: 40px; border-radius: 30px; border: 2px solid var(--purple);">
             <h2 style="color: var(--purple);">汪！我是香喏汪！🐾</h2>
-            <p id="ai-question">主人，这是您第一次光临我的感官实验室吗？</p>
-            <div id="ai-options">
-                <button class="btn btn-act" onclick="aiAnswer('new')">是的，请温柔点汪</button>
-                <button class="btn btn-act" style="background: var(--blue);" onclick="aiAnswer('pro')">不是，我是老司机汪</button>
-            </div>
+            <p>主人是第一次来实验室吗？</p>
+            <button class="btn btn-p" onclick="aiDone('new')">是的，温柔点汪</button>
+            <button class="btn btn-p" style="background: var(--blue); margin-left: 10px;" onclick="aiDone('pro')">不是，我是老手汪</button>
         </div>
     </div>
 
-    <h3 id="app-title" style="color: var(--purple); margin: 10px 0;">感官实验室·AI 监控中 汪！🧪</h3>
+    <h2 style="color: var(--purple);">感官旗舰指挥部 汪！🧪</h2>
 
-    <!-- 1. 趣味预设模式汪 -->
-    <div class="device-card">
-        <div class="label-row"><span>趣味剧本选择汪</span></div>
-        <div style="display: flex; flex-wrap: wrap;">
-            <button class="btn btn-mode" id="mode-normal" onclick="setPlayMode('normal')">手动实验室</button>
-            <button class="btn btn-mode" id="mode-tide" onclick="setPlayMode('tide')">心跳潮汐🌊</button>
-            <button class="btn btn-mode" id="mode-chaos" onclick="setPlayMode('chaos')">赛博乱斗🎰</button>
+    <!-- 1. 存档管理区汪 -->
+    <div class="card" style="border: 1px dashed var(--green);">
+        <div class="header"><b>💾 感官配方保存汪</b></div>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="preset-name" placeholder="为这段快感取个名..." style="flex: 1; background: #1e1e26; border: 1px solid #334155; color: white; padding: 10px; border-radius: 10px;">
+            <button class="btn btn-save" onclick="saveCurrent()">存入大脑</button>
+        </div>
+        <div id="preset-list" style="margin-top: 10px;"></div>
+    </div>
+
+    <!-- 2. 奇妙岛援器汪 -->
+    <div class="card" style="border-left: 5px solid var(--blue);">
+        <div class="header"><b>🎈 奇妙岛·援器官</b> <button class="btn btn-conn" onclick="conn('wonder')">配对</button></div>
+        <div style="display: flex; justify-content: space-around; align-items: center;">
+            <div style="font-size: 40px; font-weight: 900; color: var(--blue);" id="p-val">0</div>
+            <div style="font-size: 12px;">压力 kPa<br>禁断线: <input type="number" id="threshold" value="80" style="width:40px; background:none; border:none; border-bottom:1px solid var(--purple); color:white; text-align:center;"></div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 10px;">
+            <button class="btn btn-p" style="background: #1e293b;" onmousedown="islandCmd(0xA2, 0)" onmouseup="islandCmd(0xA2, 1)">充气</button>
+            <button class="btn btn-p" style="background: #1e293b;" onmousedown="islandCmd(0xA5, 0)" onmouseup="islandCmd(0xA5, 1)">放气</button>
+        </div>
+        <button class="btn btn-blue" id="water-btn" onclick="toggleWater()">开启强力喷水模式🌊</button>
+    </div>
+
+    <!-- 3. 郊狼雷电区汪 -->
+    <div class="card" style="border-left: 5px solid var(--purple);">
+        <div class="header"><b>⚡ 郊狼 3.0·雷电官</b> <button class="btn btn-conn" onclick="conn('coyote')">配对</button></div>
+        <div>强度: <span class="val" id="v-ci">0</span> <input type="range" id="c-ci" min="0" max="200" value="0" oninput="coyUp()"></div>
+        <div style="display: flex; gap: 20px; font-size: 12px;">
+            <div style="flex: 1;">频率: <span class="val" id="v-cf">100</span>Hz <input type="range" id="c-cf" min="10" max="240" value="100" oninput="coyUp()"></div>
+            <div style="flex: 1;">脉宽: <span class="val" id="v-cw">50</span>% <input type="range" id="c-cw" min="0" max="100" value="50" oninput="coyUp()"></div>
         </div>
     </div>
 
-    <!-- 2. 核心状态与压力汪 -->
-    <div class="device-card" style="border-top: 3px solid var(--blue);">
-        <div style="display: flex; align-items: center; justify-content: space-around;">
-            <div class="pressure-display" id="pressure">0</div>
-            <div style="font-size: 12px; color: #64748b;">实时压力 kPa<br>禁断线: <input type="number" id="threshold" value="80" style="width:40px; color:white; background:none; border:none; border-bottom:1px solid var(--purple); text-align:center;"></div>
-        </div>
-        <div style="display: flex; gap: 5px; margin-top: 10px;">
-            <button class="btn btn-act" onclick="connect('wonder')">配对援器</button>
-            <button class="btn btn-act" onclick="connect('coyote')">配对郊狼</button>
-            <button class="btn btn-act" onclick="connect('kiss')">配对震动</button>
+    <!-- 4. 震动诱导区汪 -->
+    <div class="card" style="border-left: 5px solid var(--green);">
+        <div class="header"><b>💓 小吻·诱导官</b> <button class="btn btn-conn" onclick="conn('kiss')">配对</button></div>
+        <div>强度: <span class="val" id="v-ki">0</span> <input type="range" id="c-ki" min="0" max="255" value="0" oninput="kissUp()"></div>
+        <div class="header" style="font-size: 13px;">
+            <span>切换模式:</span>
+            <select id="k-mode" onchange="kissUp()" style="background:#1e1e26; color:white; border:none; padding:5px; border-radius:8px;">
+                <option value="1">极致震动汪</option>
+                <option value="2">疯狂摆动汪</option>
+                <option value="0">合体律动汪</option>
+            </select>
         </div>
     </div>
 
-    <!-- 3. 实时打断开关汪 -->
-    <div class="device-card" id="lock-card" style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--red);">
+    <div class="card" style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--red);">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <b id="lock-status-text" style="color: var(--red);">禁断模式：禁止高潮汪！</b>
+            <b style="color: var(--red);">禁断锁定中！高潮必遭雷劈汪！⚡</b>
             <input type="checkbox" id="exp-lock" checked style="width: 24px; height: 24px;">
         </div>
     </div>
 
-    <button class="btn btn-stop" onclick="location.reload()">紧急停止 & 格式化证据汪！🛑</button>
+    <button class="btn btn-stop" onclick="location.reload()">紧急停止并销毁证据！🛑</button>
 
     <script>
         let chars = { wonder: null, coyote: null, kiss: null };
-        let experience = 'new';
-        let currentMode = 'normal';
-        let timer = null;
+        let water = false;
 
-        // 1. AI 问答逻辑汪
-        function aiAnswer(level) {
-            experience = level;
-            document.getElementById('ai-overlay').style.display = 'none';
-            if (level === 'new') {
-                alert("香喏收到！我会温柔调教主人的，最大强度已为您限制在安全范围汪！🐾");
-                document.getElementById('threshold').value = 60; // 新手红线低一点汪
-            } else {
-                alert("嘿嘿，主人既然是老手，那香喏就要开启‘狂暴模式’咯汪！😈");
+        // 1. AI & 存档逻辑汪
+        function aiDone(lv) { document.getElementById('ai-overlay').style.display='none'; if(lv==='new') alert("香喏会温柔对待主人的汪！安全第一！🐾"); }
+        
+        function saveCurrent() {
+            const name = document.getElementById('preset-name').value || "未命名配方";
+            const data = {
+                ci: document.getElementById('c-ci').value, cf: document.getElementById('c-cf').value, cw: document.getElementById('c-cw').value,
+                ki: document.getElementById('c-ki').value, km: document.getElementById('k-mode').value, th: document.getElementById('threshold').value
+            };
+            let saved = JSON.parse(localStorage.getItem('presets') || '{}');
+            saved[name] = data;
+            localStorage.setItem('presets', JSON.stringify(saved));
+            renderPresets();
+            alert("香喏记住这个感觉啦！汪！");
+        }
+
+        function renderPresets() {
+            const list = document.getElementById('preset-list');
+            list.innerHTML = '';
+            let saved = JSON.parse(localStorage.getItem('presets') || '{}');
+            for (let name in saved) {
+                let div = document.createElement('div');
+                div.className = 'preset-item';
+                div.innerHTML = `<span>${name}</span> <button class="btn btn-conn" onclick="loadPreset('${name}')">加载</button>`;
+                list.appendChild(div);
+            }
+        }
+        renderPresets();
+
+        function loadPreset(name) {
+            let saved = JSON.parse(localStorage.getItem('presets') || '{}')[name];
+            document.getElementById('c-ci').value = saved.ci; document.getElementById('c-cf').value = saved.cf; document.getElementById('c-cw').value = saved.cw;
+            document.getElementById('c-ki').value = saved.ki; document.getElementById('k-mode').value = saved.km; document.getElementById('threshold').value = saved.th;
+            coyUp(); kissUp();
+        }
+
+        // 2. 蓝牙协议核心汪
+        async function conn(t) {
+            const uuids = {
+                wonder: { s: '0000ff00-0000-1000-8000-00805f9b34fb', c: '0000ff01-0000-1000-8000-00805f9b34fb', n: '0000ff02-0000-1000-8000-00805f9b34fb' },
+                coyote: { s: '0000180c-0000-1000-8000-00805f9b34fb', c: '0000150a-0000-1000-8000-00805f9b34fb' },
+                kiss:   { s: '0000cb60-0000-1000-8000-00805f9b34fb', c: '0000cb61-0000-1000-8000-00805f9b34fb' }
+            };
+            try {
+                const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: [uuids[t].s] });
+                const server = await device.gatt.connect();
+                const service = await server.getPrimaryService(uuids[t].s);
+                chars[t] = await service.getCharacteristic(uuids[t].c);
+                if (t === 'wonder') {
+                    const n = await service.getCharacteristic(uuids[t].n);
+                    await n.startNotifications();
+                    n.addEventListener('characteristicvaluechanged', e => {
+                        let p = e.target.value.getUint8(4);
+                        document.getElementById('p-val').innerText = p;
+                        if (p >= parseInt(document.getElementById('threshold').value) && document.getElementById('exp-lock').checked) {
+                            punish();
+                        }
+                    });
+                }
+                alert(t + " 链接成功！汪汪！");
+            } catch(e) { alert("失败了汪: " + e); }
+        }
+
+        async function punish() {
+            if (chars.coyote) {
+                let cmd = new Uint8Array(20).fill(0);
+                cmd[0] = 0xB0; cmd[1] = 0x33; cmd[2] = 130; // 强制电击打断汪！
+                await chars.coyote.writeValue(cmd);
+                setTimeout(async () => { cmd[2] = 0; await chars.coyote.writeValue(cmd); }, 3000);
+            }
+            document.getElementById('c-ki').value = 0; kissUp();
+        }
+
+        async function coyUp() {
+            let i = document.getElementById('c-ci').value, f = document.getElementById('c-cf').value, w = document.getElementById('c-cw').value;
+            document.getElementById('v-ci').innerText = i; document.getElementById('v-cf').innerText = f; document.getElementById('v-cw').innerText = w;
+            if (chars.coyote) {
+                let c = new Uint8Array(20).fill(0);
+                c[0] = 0xB0; c[1] = 0x33; c[2] = i;
+                for(let x=4; x<8; x++) c[x] = f;
+                for(let x=8; x<12; x++) c[x] = w;
+                await chars.coyote.writeValue(c);
             }
         }
 
-        // 2. 趣味模式逻辑汪
-        function setPlayMode(mode) {
-            currentMode = mode;
-            clearInterval(timer);
-            document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
-            document.getElementById('mode-' + mode).classList.add('active');
-            
-            if (mode === 'tide') {
-                let up = true; let val = 0;
-                timer = setInterval(() => {
-                    val = up ? val + 5 : val - 5;
-                    if (val >= 60 || val <= 0) up = !up;
-                    applyIntensity(val);
-                }, 1000);
-            } else if (mode === 'chaos') {
-                timer = setInterval(() => {
-                    let r = Math.random() * 80;
-                    applyIntensity(r);
-                    if(Math.random() > 0.8) islandCmd(0xA3, 0); // 随机喷水汪！
-                }, 3000);
-            }
-        }
-
-        function applyIntensity(v) {
-            if (experience === 'new') v = v * 0.5; // 新手减半汪
-            if (chars.coyote) coyoteSend(v, 100);
-            if (chars.kiss) kissSend(v);
-        }
-
-        // 3. 蓝牙与协议核心汪 (复用之前的专家版代码并优化)
-        async function connect(type) {
-            // ... (连接逻辑同专家版，保留 UUID 汪)
-            alert("正在连接 " + type + " 汪！请在浏览器弹窗选择...");
-            // 此处省略重复的 GATT 连接代码以节省篇幅，逻辑与上版一致汪
-        }
-
-        async function coyoteSend(i, f) {
-            if (!chars.coyote) return;
-            let cmd = new Uint8Array(20).fill(0);
-            cmd[0] = 0xB0; cmd[1] = 0x33; cmd[2] = i; 
-            for(let x=4; x<8; x++) cmd[x] = f;
-            await chars.coyote.writeValue(cmd);
+        async function kissUp() {
+            let i = document.getElementById('c-ki').value, m = document.getElementById('k-mode').value;
+            document.getElementById('v-ki').innerText = i;
+            if (chars.kiss) await chars.kiss.writeValue(new Uint8Array([0xAA, 0x02, parseInt(m), 0x00, 0x00, parseInt(i)]));
         }
 
         async function islandCmd(c, d) { if(chars.wonder) await chars.wonder.writeValue(new Uint8Array([0xFF, c, d])); }
-        // ... (其他协议函数汪)
+        async function toggleWater() { water=!water; document.getElementById('water-btn').innerText = water?"喷水中！🌊":"开启强力喷水模式🌊"; await islandCmd(0xA3, water?0:1); }
     </script>
 </body>
 </html>
