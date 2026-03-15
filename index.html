@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>感官实验室·Web版 汪！</title>
+    <style>
+        :root { --bg: #0f0f12; --purple: #a855f7; --blue: #3b82f6; --red: #ef4444; }
+        body { background: var(--bg); color: #f8fafc; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+        .card { background: rgba(255,255,255,0.05); border-radius: 25px; padding: 20px; width: 100%; max-width: 400px; border: 1px solid rgba(168,85,247,0.2); margin-bottom: 20px; text-align: center; }
+        #pressure { font-size: 64px; font-weight: 900; color: var(--purple); margin: 10px 0; }
+        .btn { width: 100%; padding: 15px; border-radius: 15px; border: none; font-weight: bold; margin-top: 10px; cursor: pointer; color: white; }
+        .btn-p { background: var(--purple); } .btn-b { background: var(--blue); } .btn-r { background: var(--red); height: 60px; }
+        .input-box { background: none; border: none; border-bottom: 2px solid var(--purple); color: var(--purple); font-size: 24px; width: 60px; text-align: center; outline: none; }
+        .switch-row { display: flex; justify-content: space-between; align-items: center; margin: 15px 0; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 15px; }
+    </style>
+</head>
+<body>
+    <h1>感官实验室🧪</h1>
+    <div class="card">
+        <div style="color: grey;">实时压力数值 (kPa)汪</div>
+        <div id="pressure">0</div>
+        <div>
+            <span>禁断红线：</span>
+            <input type="number" id="threshold" class="input-box" value="80">
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="switch-row">
+            <div style="text-align: left;">
+                <b id="exp-status" style="color: var(--red);">禁断模式：禁止高潮汪！</b>
+                <div style="font-size: 10px; color: grey;">突破红线即刻降下惩罚雷电汪！</div>
+            </div>
+            <input type="checkbox" id="allow-toggle" style="width: 24px; height: 24px;">
+        </div>
+        <p>诱导强度：<span id="v-val">50</span>%</p>
+        <input type="range" id="v-slider" style="width: 100%;">
+    </div>
+
+    <button class="btn btn-p" id="btn-conn">🔗 连接所有宝贝设备汪！</button>
+    <button class="btn btn-b" id="btn-water">🌊 开启强力喷水模式 汪！</button>
+    <button class="btn btn-r" id="btn-stop">紧急停止一切！🛑</button>
+
+    <script>
+        // 香喏的 Web Bluetooth 魔法 (简版逻辑)
+        let wonderChar, coyoteChar, kissChar;
+        document.getElementById('btn-conn').onclick = async () => {
+            try {
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [{ namePrefix: 'RS-KNW' }],
+                    optionalServices: ['0000ff00-0000-1000-8000-00805f9b34fb']
+                });
+                const server = await device.gatt.connect();
+                const service = await server.getPrimaryService('0000ff00-0000-1000-8000-00805f9b34fb');
+                const notify = await service.getCharacteristic('0000ff02-0000-1000-8000-00805f9b34fb');
+                await notify.startNotifications();
+                notify.addEventListener('characteristicvaluechanged', (e) => {
+                    let val = e.target.value.getUint8(4); // 解析压力汪
+                    document.getElementById('pressure').innerText = val;
+                    let thres = parseInt(document.getElementById('threshold').value);
+                    if (val >= thres && !document.getElementById('allow-toggle').checked) {
+                        alert("⚠️ 压力过线！雷电降临打断中汪！⚡");
+                    }
+                });
+                alert("奇妙岛已就位！请继续连接郊狼和小吻汪！");
+            } catch(e) { alert("连接失败汪: " + e); }
+        };
+        document.getElementById('btn-stop').onclick = () => { location.reload(); };
+    </script>
+</body>
+</html>
