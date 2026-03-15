@@ -3,15 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WONDER LAB NEXUS v111 - 终极奥义版</title>
+    <title>WONDER NEXUS v112 - 终极自由版</title>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root { --bg: #050508; --card: #12121a; --purple: #a855f7; --blue: #3b82f6; --red: #ff2d55; --green: #10b981; --gray: #64748b; --border: rgba(255,255,255,0.1); }
         * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: #f8fafc; font-family: 'Segoe UI', sans-serif; margin: 0; padding-bottom: 90px; user-select: none; }
         header { position: sticky; top: 0; background: rgba(5,5,8,0.9); backdrop-filter: blur(15px); padding: 15px; display: flex; justify-content: space-between; align-items: center; z-index: 100; border-bottom: 1px solid #333; }
-        .tower-dot { font-size: 10px; padding: 4px 8px; border-radius: 8px; background: #222; color: #444; font-weight: 900; margin-left: 5px; }
-        .tower-on { color: var(--green); box-shadow: 0 0 10px var(--green); }
+        .tower-on { color: var(--green); text-shadow: 0 0 10px var(--green); font-weight: 900; }
         .p-badge { font-family: monospace; font-size: 22px; color: var(--blue); font-weight: 900; }
         .content { padding: 12px; max-width: 500px; margin: 0 auto; min-height: 80vh; }
         .tab-view { display: none; animation: fadeIn 0.3s ease; }
@@ -19,10 +18,10 @@
         .pro-card { background: var(--card); border-radius: 28px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); position: relative; }
         .btn-hex { background: #2d2d39; border: none; color: white; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.1s; font-size: 13px; }
         .btn-hex:active { transform: scale(0.9); background: var(--purple); }
-        .btn-locked { opacity: 0.2; pointer-events: none; filter: grayscale(1); }
         .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+        .val-hl { color: var(--purple); font-weight: 900; font-family: monospace; font-size: 20px; }
         input[type=range] { width: 100%; height: 6px; accent-color: var(--purple); margin: 10px 0; background: #333; border-radius: 10px; appearance: none; }
-        input[type=number] { background: #1a1a24; border: 1px solid var(--purple); color: var(--green); padding: 8px; border-radius: 8px; width: 60px; text-align: center; font-size: 18px; }
+        input[type=number] { background: #1a1a24; border: 1px solid var(--purple); color: var(--green); padding: 5px; border-radius: 8px; width: 55px; text-align: center; font-family: monospace; }
         nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #0a0a0f; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; z-index: 100; }
         .nav-item { color: #64748b; font-size: 10px; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
         .nav-item.active { color: var(--purple); font-weight: bold; }
@@ -32,154 +31,164 @@
 <body>
 
     <header>
-        <div style="font-size: 10px; font-weight: 900; letter-spacing: 1px;">NEXUS FINAL v111</div>
+        <div style="font-size: 10px; font-weight: 900;">NEXUS PRO v112</div>
         <div class="p-badge" id="head-p">00 kPa</div>
-        <div style="display:flex;"><span id="st-w" class="tower-dot">W</span><span id="st-c" class="tower-dot">C</span><span id="st-k" class="tower-dot">K</span></div>
-        <button onclick="location.reload()" style="background:var(--red); color:white; border:none; border-radius:8px; padding:5px 10px; font-size:11px;">紧急停止</button>
+        <div style="display:flex; gap:10px; font-size:10px; color:#444;">
+            <span id="d-w">W</span><span id="d-c">C</span><span id="d-k">K</span>
+        </div>
+        <button onclick="location.reload()" style="background:var(--red); color:white; border:none; border-radius:8px; padding:5px 10px; font-size:11px;">紧急切断</button>
     </header>
 
     <div class="content">
-        <!-- 🕹️ 手动台汪 -->
-        <div id="v-manual" class="tab-view active">
+        
+        <!-- 🕹️ 1. 手动面板：全员找回来了汪！ -->
+        <div id="view-manual" class="tab-view active">
             <div class="pro-card">
                 <b>⚡ 郊狼指挥塔</b>
                 <div style="margin-top:15px;">
                     <div style="display:flex; justify-content:space-between; font-size:12px;"><span>CHANNEL A</span> <b class="val-hl" id="v-ca">0</b></div>
                     <div class="grid-4">
-                        <button class="btn-hex" onclick="cAd('a',-10)">-10</button><button class="btn-hex" onclick="cAd('a',-1)">-1</button>
-                        <button class="btn-hex" onclick="cAd('a',1)">+1</button><button class="btn-hex" onclick="cAd('a',10)">+10</button>
+                        <button class="btn-hex" onclick="cAdjust('a',-10)">-10</button><button class="btn-hex" onclick="cAdjust('a',-1)">-1</button>
+                        <button class="btn-hex" onclick="cAdjust('a',1)">+1</button><button class="btn-hex" onclick="cAdjust('a',10)">+10</button>
                     </div>
                 </div>
                 <div style="margin-top:15px;">
                     <div style="display:flex; justify-content:space-between; font-size:12px;"><span>CHANNEL B</span> <b class="val-hl" id="v-cb">0</b></div>
                     <div class="grid-4">
-                        <button class="btn-hex" onclick="cAd('b',-10)">-10</button><button class="btn-hex" onclick="cAd('b',-1)">-1</button>
-                        <button class="btn-hex" onclick="cAd('b',1)">+1</button><button class="btn-hex" onclick="cAd('b',10)">+10</button>
+                        <button class="btn-hex" onclick="cAdjust('b',-10)">-10</button><button class="btn-hex" onclick="cAdjust('b',-1)">-1</button>
+                        <button class="btn-hex" onclick="cAdjust('b',1)">+1</button><button class="btn-hex" onclick="cAdjust('b',10)">+10</button>
                     </div>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
-                    <div><small>频率:</small> <span id="txt-cf">100</span>Hz<input type="range" id="sl-cf" min="10" max="240" oninput="cSyUI()"></div>
-                    <div><small>脉宽:</small> <span id="txt-cw">50</span>%<input type="range" id="sl-cw" min="0" max="100" oninput="cSyUI()"></div>
+                    <div><small>频率: </small><span id="v-cf" style="color:var(--purple)">100</span>Hz<input type="range" id="sl-cf" min="10" max="240" value="100" oninput="cSyncUI()"></div>
+                    <div><small>脉宽: </small><span id="v-cw" style="color:var(--purple)">50</span>%<input type="range" id="sl-cw" min="0" max="100" value="50" oninput="cSyncUI()"></div>
                 </div>
             </div>
             <div class="pro-card" style="border-left:4px solid var(--green);">
-                <b>🌪️ 诱导双核</b>
-                <div style="margin-top:15px;">
-                    <div style="display:flex; justify-content:space-between;"><small>🌪️ 吸吮诱导</small> <b id="txt-ks" style="color:var(--green)">0%</b></div>
-                    <input type="range" id="sl-ks" max="255" value="0" oninput="kSy('suck')">
-                    <div style="display:flex; justify-content:space-between;"><small>📳 震动强度</small> <b id="txt-kv" style="color:var(--green)">0%</b></div>
-                    <input type="range" id="sl-kv" max="255" value="0" oninput="kSy('vibe')">
+                <b>🌪️ 诱导双核 (吸吮/震动)</b>
+                <div style="margin-top:10px;">
+                    <div style="display:flex; justify-content:space-between;"><small>吸吮</small> <b id="txt-ks" style="color:var(--green)">0%</b></div>
+                    <input type="range" id="sl-ks" max="255" value="0" oninput="kSync('suck')">
+                    <div style="display:flex; justify-content:space-between;"><small>震动</small> <b id="txt-kv" style="color:var(--green)">0%</b></div>
+                    <input type="range" id="sl-kv" max="255" value="0" oninput="kSync('vibe')">
                 </div>
             </div>
             <div class="pro-card" style="border-left:4px solid var(--blue);">
-                <div style="display:flex; justify-content:space-between;"><b>🎈 援器控制</b> <b id="p-mini" style="color:var(--blue)">0 kPa</b></div>
+                <div style="display:flex; justify-content:space-between;"><b>🎈 援器点放</b> <b id="p-mini" style="color:var(--blue)">0 kPa</b></div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px;">
-                    <button class="btn-hex" style="background:var(--blue); height:50px;" onclick="isla(0xA2,0)">点充汪</button>
-                    <button class="btn-hex" id="btn-def" style="height:50px;" onclick="isla(0xA5,0)">点放汪</button>
+                    <button class="btn-hex" style="background:var(--blue); height:55px;" onclick="isla(0xA2,0)">点充汪</button>
+                    <button class="btn-hex" style="height:55px;" onclick="isla(0xA5,0)">点放汪</button>
                 </div>
-                <div style="font-size:11px; color:grey; margin-top:10px; text-align:center;">已充气次数: <b id="inf-cnt" style="color:var(--green)">0</b> 次</div>
+                <div style="font-size:11px; color:grey; margin-top:10px; text-align:center;">点放充气计数: <b id="inf-cnt" style="color:var(--green)">0</b> 次</div>
             </div>
         </div>
 
-        <!-- 🧪 实验室页汪 -->
+        <!-- 🧪 2. 实验页：支持分钟数调节汪！ -->
         <div id="view-lab" class="tab-view">
             <div class="pro-card" style="border: 2px solid var(--red); text-align:center;">
-                <div class="pressure-hero" id="p-lab">0</div>
-                <div style="font-size:36px; font-weight:900; color:var(--purple); font-family:monospace;" id="l-timer">READY</div>
+                <div style="font-size:64px; font-weight:900; color:var(--blue);" id="p-lab">0</div>
+                <div style="font-size:32px; font-weight:900; color:var(--purple); font-family:monospace;" id="l-timer">READY</div>
             </div>
+            
             <div class="pro-card">
-                <b>⚙️ 实验运行参数设定</b>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;"><span>压力红线汪:</span> <input type="number" id="lab-th" value="85"></div>
-                <div style="margin-top:15px;">
-                    <div style="display:flex; justify-content:space-between;"><small>🎰 轮盘赌胜率</small><b id="v-prob" style="color:var(--green)">50%</b></div>
-                    <input type="range" id="sl-prob" min="0" max="100" value="50" oninput="document.getElementById('v-prob').innerText=this.value+'%'">
-                </div>
+                <div style="display:flex; justify-content:space-between; align-items:center;"><span>压力红线汪:</span> <input type="number" id="lab-th" value="85"></div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;"><small>轮盘赌中奖率:</small> <b id="v-prob" style="color:var(--green)">50%</b></div>
+                <input type="range" id="sl-prob" value="50" oninput="document.getElementById('v-prob').innerText=this.value+'%'">
             </div>
-            <button class="btn-hex" style="width:100%; background:var(--purple); margin-bottom:8px;" onclick="startL('covenant')">⛓️ 圣约模式 (20min / 250ml)</button>
-            <button class="btn-hex" style="width:100%; background:var(--green); margin-bottom:8px;" onclick="startL('counter')">🔢 计数模式 (3次 / 15min)</button>
-            <button class="btn-hex" style="width:100%; background:var(--blue);" onclick="startL('roulette')">🎰 轮盘博弈 (10min 限时)</button>
+
+            <!-- 圣约模式汪 -->
+            <div class="pro-card" style="border-top: 3px solid var(--purple);">
+                <b>⛓️ 圣约协议：禁断时长 <input type="number" id="t-cov" value="20"> min</b>
+                <button class="btn-hex" style="width:100%; background:var(--purple); margin-top:10px;" onclick="startL('covenant')">🔒 启动圣约仪式汪</button>
+            </div>
+
+            <!-- 计数模式汪 -->
+            <div class="pro-card" style="border-top: 3px solid var(--green);">
+                <b>🔢 计数任务：<input type="number" id="g-cnt" value="3"> 次 / 时限 <input type="number" id="t-cnt" value="15"> min</b>
+                <button class="btn-hex" style="width:100%; background:var(--green); margin-top:10px;" onclick="startL('counter')">🎯 开启任务挑战汪</button>
+            </div>
+
+            <!-- 轮盘模式汪 -->
+            <div class="pro-card" style="border-top: 3px solid var(--blue);">
+                <b>🎰 轮盘博弈：限时运行 <input type="number" id="t-rol" value="10"> min</b>
+                <button class="btn-hex" style="width:100%; background:var(--blue); margin-top:10px;" onclick="startL('roulette')">🎰 开启感官博弈汪</button>
+            </div>
         </div>
 
-        <!-- 🛸 指挥页汪 -->
+        <!-- 🛸 3. 指挥页 -->
         <div id="view-auto" class="tab-view">
             <div class="pro-card" style="border: 2px solid var(--purple);">
                 <b>🛸 指挥官口令</b>
-                <input type="text" id="cmd-in" class="cmd-box" placeholder="例如：点动充气..." onkeypress="doCmd(event)">
-            </div>
-            <div class="pro-card" style="border: 1px dashed var(--gray);">
-                <b>💾 感官配方库</b>
-                <div id="recipe-list" style="margin-top:10px; font-size:12px;"></div>
+                <input type="text" id="cmd-in" class="cmd-box" style="width:100%; background:#1a1a24; border:1px solid var(--purple); color:white; padding:15px; border-radius:15px; margin-top:10px;" placeholder="在此下达暗号汪..." onkeypress="handleCmd(event)">
             </div>
         </div>
 
-        <!-- 🌐 远控页汪 -->
+        <!-- 🌐 4. 远控页 -->
         <div id="view-remote" class="tab-view">
             <div class="pro-card" style="text-align:center; border: 2px solid var(--green);">
-                <h3>🌐 远程授权中心汪</h3>
+                <h3>🌐 远程权限控制</h3>
                 <button class="btn-hex" style="background:var(--purple); width:100%;" onclick="initM()">生成授权码</button>
-                <div class="val-hl" style="font-size:36px; margin:15px 0; color:var(--green);" id="my-id">------</div>
-                <input type="text" id="target-id" class="cmd-box" style="text-align:center;" placeholder="填入对方授权码...">
-                <button class="btn-hex" style="background:var(--blue); width:100%; margin-top:10px;" onclick="initS()">远程接入</button>
+                <div id="my-id" style="font-size:32px; font-weight:900; color:var(--green); margin:15px;">------</div>
+                <input type="text" id="target-id" style="width:100%; background:#1a1a24; border:1px solid #333; color:white; padding:15px; text-align:center; border-radius:15px;" placeholder="输入对方代码汪...">
+                <button class="btn-hex" style="background:var(--blue); width:100%; margin-top:10px;" onclick="initS()">远程合体</button>
             </div>
         </div>
 
-        <!-- 🔗 连接页汪 -->
+        <!-- 🔗 5. 连接页 -->
         <div id="view-conn" class="tab-view">
-            <div class="pro-card">
-                <h3>🔗 宝贝配对</h3>
-                <button class="btn-hex" style="width:100%; margin-bottom:10px; background:var(--blue);" onclick="bt('wonder')">配对援器</button>
-                <button class="btn-hex" style="width:100%; margin-bottom:10px; background:var(--purple);" onclick="bt('coyote')">配对郊狼</button>
-                <button class="btn-hex" style="width:100%; background:var(--green);" onclick="bt('kiss')">配对小吻</button>
-            </div>
+            <div class="pro-card"><h3>🔗 宝贝配对</h3><button class="btn-hex" style="width:100%; background:var(--blue); margin-bottom:10px;" onclick="bt('wonder')">连接奇妙岛</button><button class="btn-hex" style="width:100%; background:var(--purple); margin-bottom:10px;" onclick="bt('coyote')">连接郊狼</button><button class="btn-hex" style="width:100%; background:var(--green);" onclick="bt('kiss')">连接小吻</button></div>
         </div>
+
     </div>
 
     <nav>
-        <div class="nav-item active" onclick="tab('manual')"><span>🕹️</span>手动</div>
-        <div class="nav-item" onclick="tab('lab')"><span>🧪</span>实验</div>
-        <div class="nav-item" onclick="tab('auto')"><span>🛸</span>指挥</div>
-        <div class="nav-item" onclick="tab('remote')"><span>🌐</span>远控</div>
-        <div class="nav-item" onclick="tab('conn')"><span>🔗</span>连接</div>
+        <div class="nav-item active" onclick="switchT('manual')">🕹️手动</div>
+        <div class="nav-item" onclick="switchT('lab')">🧪实验</div>
+        <div class="nav-item" onclick="switchT('auto')">🛸指挥</div>
+        <div class="nav-item" onclick="switchT('remote')">🌐远控</div>
+        <div class="nav-item" onclick="switchT('conn')">🔗连接</div>
     </nav>
 
     <script>
-        let chars = { w:null, c:null, k:null }; let coyV = { a:0, b:0 }; 
-        let isLocked = false; let labMode = ''; let infCount = 0; let labTimer = null;
+        let chars = { w:null, c:null, k:null }; let coyV = { a:0, b:0 }; let infCount = 0; let labItv = null;
 
-        function tab(t) {
+        function switchT(t) {
             document.querySelectorAll('.tab-view').forEach(v => v.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('view-' + t).classList.add('active');
             event.currentTarget.classList.add('active');
         }
 
-        // 数值同步汪！
-        function cSyUI() { document.getElementById('txt-cf').innerText = document.getElementById('sl-cf').value; document.getElementById('txt-cw').innerText = document.getElementById('sl-cw').value; cSync(); }
-        function cAd(ch, d) { coyV[ch] = Math.max(0, Math.min(200, coyV[ch]+d)); document.getElementById('v-c'+ch).innerText=coyV[ch]; cSync(); }
+        // --- 核心修复：数值同步与控制逻辑汪 ---
+        function cSyncUI() { document.getElementById('txt-cf').innerText = document.getElementById('sl-cf').value; document.getElementById('txt-cw').innerText = document.getElementById('sl-cw').value; cSync(); }
+        function cAdjust(ch, d) { coyV[ch] = Math.max(0, Math.min(200, coyV[ch] + d)); document.getElementById('v-c'+ch).innerText = coyV[ch]; cSync(); }
         async function cSync() { if(chars.c) chars.c.writeValue(new Uint8Array([0xB0, 0x33, coyV.a, coyV.b, 100,100,100,100, 50,50,50,50, 100,100,100,100, 50,50,50,50])); }
-        async function kSy(m) { 
+        async function kSync(m) { 
             let v = document.getElementById('sl-k'+(m==='suck'?'s':'v')).value; 
             document.getElementById('txt-k'+(m==='suck'?'s':'v')).innerText = Math.floor(v/2.55) + "%";
             if(chars.k) chars.k.writeValue(new Uint8Array([0xAA, 0x02, (m==='suck'?0x02:0x01), 0x00, 0x00, v])); 
         }
         async function isla(c, d) {
-            if(c === 0xA5 && isLocked) { alert("⚠️ 防漏锁开启中，禁止放气！"); return; }
             if(chars.w) await chars.w.writeValue(new Uint8Array([0xFF, c, d]));
             if(c === 0xA2 && d === 0) { infCount++; document.getElementById('inf-cnt').innerText = infCount; }
-            if(c === 0xA3) isLocked = (d === 0);
         }
 
+        // --- 实验室逻辑汪 ---
         function startL(s) {
-            if(!confirm("开启剧本 ["+s+"]，实验期间无法关闭汪！")) return;
-            labMode = s; let sec = (s === 'covenant' ? 20 : 15) * 60;
-            labTimer = setInterval(() => { sec--; updateClock(sec); if(sec<=0) location.reload(); }, 1000);
-            window.onbeforeunload = () => "还没结束汪！";
+            let mins = document.getElementById('t-' + s.substring(0,3)).value;
+            if(!confirm("开启剧本 ["+s+"]，限时 "+mins+" 分钟汪！")) return;
+            let sec = mins * 60;
+            labItv = setInterval(() => {
+                sec--; let m = Math.floor(sec/60), sc = sec%60;
+                document.getElementById('l-timer').innerText = (m<10?'0':'')+m+":"+(sc<10?'0':'')+sc;
+                if(sec <= 0) { alert("时间到汪！"); location.reload(); }
+            }, 1000);
         }
-        function updateClock(s) { let m=Math.floor(s/60), sc=s%60; document.getElementById('l-timer').innerText = (m<10?'0':'')+m+":"+(sc<10?'0':'')+sc; }
-        function doCmd(e) { if(e.key === 'Enter') { alert("汪！指令已执行！"); e.target.value = ''; } }
-        async function bt(t) { document.getElementById('st-'+t[0]).classList.add('st-on'); alert(t+" 链接成功汪！"); }
+
+        function handleCmd(e) { if(e.key==='Enter'){ alert("口令接收汪！"); e.target.value=''; } }
+        async function bt(t) { document.getElementById('d-' + t[0]).classList.add('tower-on'); alert(t + " 链接成功汪！"); }
         function initM() { document.getElementById('my-id').innerText = Math.floor(100000 + Math.random()*900000); }
-        function initS() { alert("尝试连接对方汪！"); tab('manual'); }
+        function initS() { alert("尝试远程合体中汪..."); switchT('manual'); }
     </script>
 </body>
 </html>
