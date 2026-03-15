@@ -3,183 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>感官指挥官 v7.0 - 圣盾实验室 汪！</title>
+    <title>感官指挥官 v12.0 - 终极服从协议 汪！</title>
     <style>
-        :root { --bg: #0a0a0f; --card: #16161e; --purple: #a855f7; --blue: #3b82f6; --red: #f43f5e; --green: #10b981; --gray: #64748b; }
-        body { background: var(--bg); color: #f1f5f9; font-family: sans-serif; margin: 0; padding-bottom: 90px; }
-        header { position: sticky; top: 0; background: rgba(10,10,15,0.9); backdrop-filter: blur(10px); padding: 12px; display: flex; justify-content: space-between; align-items: center; z-index: 100; border-bottom: 1px solid #333; }
+        :root { --bg: #050508; --card: #12121a; --purple: #a855f7; --blue: #3b82f6; --red: #ff2d55; --green: #22c55e; }
+        body { background: var(--bg); color: #f8fafc; font-family: sans-serif; margin: 0; padding-bottom: 90px; }
+        header { position: sticky; top: 0; background: rgba(5,5,8,0.9); backdrop-filter: blur(10px); padding: 12px; text-align: center; border-bottom: 1px solid #333; z-index: 100; }
         .content { padding: 12px; width: 100%; max-width: 500px; margin: 0 auto; box-sizing: border-box; }
-        .card { background: var(--card); border-radius: 24px; padding: 18px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .hidden { display: none !important; }
+        .card { background: var(--card); border-radius: 24px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); transition: 0.5s; }
         
-        /* 按钮与控制细节汪 */
-        .btn-ctrl { background: #2d2d39; border: none; color: white; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        .btn-ctrl:active { background: var(--purple); transform: scale(0.95); }
-        .grid-ctrl { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 10px; }
-        .btn-plus { background: rgba(168, 85, 247, 0.2); border: 1px solid var(--purple); color: var(--purple); }
-        .btn-safe { background: var(--blue); width: 100%; padding: 15px; margin-top: 10px; }
-        .val-large { font-size: 48px; font-weight: 900; color: var(--blue); text-align: center; }
+        /* 协议状态汪 */
+        .stage-active { border: 2px solid var(--purple) !important; box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
+        .lock-locked { background: rgba(255,45,85,0.1); border: 2px solid var(--red); pointer-events: none; opacity: 0.7; }
         
-        nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #111; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; z-index: 100; }
-        .nav-item { color: var(--gray); font-size: 11px; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-        .nav-item.active { color: var(--purple); font-weight: bold; }
+        .btn-start { background: var(--purple); color: white; border: none; padding: 20px; border-radius: 20px; width: 100%; font-size: 20px; font-weight: 900; cursor: pointer; }
+        .timer-big { font-size: 48px; font-weight: 900; color: var(--purple); font-family: monospace; }
+        .status-text { font-size: 14px; color: var(--green); margin-top: 10px; font-weight: bold; }
+        input[type=number] { background: #222; border: 1px solid #444; color: var(--green); padding: 8px; border-radius: 8px; width: 70px; text-align: center; }
     </style>
 </head>
 <body>
 
-    <header>
-        <div style="font-size: 12px;">🛡️ <b>香喏·圣盾指挥部</b></div>
-        <button onclick="location.reload()" style="background:var(--red); color:white; border:none; border-radius:8px; padding:5px 10px; font-size:12px;">一键断电自毁汪！</button>
-    </header>
+    <header>🛡️ <b>香喏·终极服从协议中心</b></header>
 
-    <!-- 1. 连接页汪 -->
-    <div id="tab-conn" class="content">
-        <div class="card">
-            <h3>🔗 设备配对站</h3>
-            <button class="btn-ctrl" style="width:100%; margin-bottom:8px; background:var(--blue);" onclick="btConn('wonder')">配对：Clov 充气援器</button>
-            <button class="btn-ctrl" style="width:100%; margin-bottom:8px; background:var(--purple);" onclick="btConn('coyote')">配对：DG-Lab 郊狼</button>
-            <button class="btn-ctrl" style="width:100%; background:var(--green);" onclick="btConn('kiss')">配对：震动玩具</button>
-        </div>
-    </div>
-
-    <!-- 2. 手动模式汪 (按需点放汪) -->
-    <div id="tab-manual" class="content hidden">
-        <div class="card" style="border-left: 5px solid var(--blue);">
-            <div style="display:flex; justify-content:space-between;"><b>🎈 援器·手动点放</b> <span id="p-mini" style="color:var(--blue)">0 kPa</span></div>
-            <div class="grid-ctrl" style="grid-template-columns: 1fr 1fr;">
-                <button class="btn-ctrl btn-safe" onclick="islandStep(0xA2)">点一下充气汪</button>
-                <button class="btn-ctrl btn-safe" style="background:#1e293b" onclick="islandStep(0xA5)">点一下放气汪</button>
+    <div class="content">
+        <!-- 1. 协议参数预设汪 -->
+        <div id="setup-card" class="card">
+            <h3>📝 协议编排汪</h3>
+            <div style="display:flex; justify-content:space-between; margin:10px 0;">
+                <span>禁断时长 (分钟)汪:</span>
+                <input type="number" id="time-lock" value="30">
             </div>
-            <button class="btn-ctrl" style="width:100%; margin-top:10px; background:var(--blue);" onclick="islandStep(0xA3, 2)">🌊 喷水泵开关汪</button>
+            <div style="display:flex; justify-content:space-between; margin:10px 0;">
+                <span>灌注水量 (ml)汪:</span>
+                <input type="number" id="water-ml" value="250">
+            </div>
+            <div style="display:flex; justify-content:space-between; margin:10px 0;">
+                <span>高潮诱导强度 (0-255):</span>
+                <input type="number" id="final-v" value="255">
+            </div>
+            <button class="btn-start" id="btn-master" onclick="startUltimateProtocol()">🔒 开启协议：不准回头汪！</button>
         </div>
 
-        <div class="card" style="border-left: 5px solid var(--purple);">
-            <div style="display:flex; justify-content:space-between;"><b>⚡ 郊狼·双通道微调</b></div>
-            <div style="margin-top:10px;">
-                <div style="display:flex; justify-content:space-between; font-size:12px;"><span>通道 A (0-200)</span> <b id="v-ca">0</b></div>
-                <div class="grid-ctrl">
-                    <button class="btn-ctrl btn-plus" onclick="coyShift('a', -10)">-10</button>
-                    <button class="btn-ctrl btn-plus" onclick="coyShift('a', -1)">-1</button>
-                    <button class="btn-ctrl btn-plus" onclick="coyShift('a', 1)">+1</button>
-                    <button class="btn-ctrl btn-plus" onclick="coyShift('a', 10)">+10</button>
+        <!-- 2. 实时执行监控汪 -->
+        <div id="monitor-card" class="card hidden">
+            <div style="text-align:center;">
+                <div id="current-stage-title" style="color:var(--purple); font-weight:bold;">阶段一：强制禁断中...</div>
+                <div class="timer-big" id="main-timer">00:00</div>
+                <div id="stage-desc" style="font-size:12px; color:grey;">此阶段无法关闭，压力过线必遭电击汪！</div>
+            </div>
+            <hr style="border:0; border-top:1px solid #333; margin:20px 0;">
+            <div style="display:flex; justify-content:space-around;">
+                <div style="text-align:center;">
+                    <small>压力 (kPa)</small><br><b id="p-val" style="color:var(--blue); font-size:24px;">0</b>
                 </div>
-            </div>
-            <div style="margin-top:15px;">
-                <div style="display:flex; justify-content:space-between; font-size:12px;"><span>通道 B (0-200)</span> <b id="v-cb">0</b></div>
-                <div class="grid-ctrl">
-                    <button class="btn-ctrl btn-plus" onclick="coyShift('b', -10)">-10</button>
-                    <button class="btn-ctrl btn-plus" onclick="coyShift('b', -1)">-1</button>
-                    <button class="btn-ctrl btn-plus" onclick="coyShift('b', 1)">+1</button>
-                    <button class="btn-ctrl btn-plus" onclick="coyShift('b', 10)">+10</button>
+                <div style="text-align:center;">
+                    <small>红线</small><br><b style="color:var(--red); font-size:24px;">80</b>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- 3. 自动模式汪 (高潮禁断+剧本汪) -->
-    <div id="tab-auto" class="content hidden">
-        <div class="card" style="border: 2px solid var(--red);">
-            <div class="val-large" id="p-now">0</div>
-            <div style="text-align:center; font-size:12px; color:grey;">实时压强 kPa<br>禁断红线: <input type="number" id="lab-th" value="80" style="width:50px; background:none; border:none; border-bottom:2px solid var(--red); color:white; text-align:center; font-size:20px;"></div>
-        </div>
-        <div class="card">
-            <b>🎭 自动感官实验汪</b>
-            <button class="btn-ctrl" style="width:100%; margin:5px 0; background:var(--purple);" onclick="startScript('tide')">开启：心跳潮汐汪 (全屋联动呼吸)</button>
-            <button class="btn-ctrl" style="width:100%; margin:5px 0; background:var(--blue);" onclick="startScript('chaos')">开启：赛博乱斗汪 (随机恶作剧)</button>
-            <div class="card" style="background:rgba(244,63,94,0.1); border:1px solid var(--red); margin-top:10px; padding:10px;">
-                <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <b style="color:var(--red);">高潮禁断模式已开启！⚡</b>
-                    <input type="checkbox" id="lab-lock" checked style="width:24px;height:24px;">
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <nav>
-        <div class="nav-item active" onclick="switchTab('conn')"><span>🔗</span>连接</div>
-        <div class="nav-item" onclick="switchTab('manual')"><span>🕹️</span>手动</div>
-        <div class="nav-item" onclick="switchTab('auto')"><span>🧠</span>实验</div>
-    </nav>
 
     <script>
         let chars = { wonder: null, coyote: null, kiss: null };
-        let coyVal = { a: 0, b: 0 };
-        let timer = null;
+        let currentStage = 0; // 0:准备, 1:禁断, 2:灌肠, 3:释放汪
+        let mainTimer = null;
 
-        function switchTab(t) {
-            document.querySelectorAll('.content').forEach(v => v.classList.add('hidden'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('tab-' + t).classList.remove('hidden');
-            event.currentTarget.classList.add('active');
+        // 启动终极协议汪！
+        async function startUltimateProtocol() {
+            if(!confirm("汪！协议一旦开始，在时间抵达前将无法关闭，主人准备好服从了吗？")) return;
+            
+            document.getElementById('setup-card').classList.add('hidden');
+            document.getElementById('monitor-card').classList.remove('hidden');
+            
+            runStage1();
         }
 
-        async function btConn(t) {
-            const cfg = {
-                wonder: { s: '0000ff00-0000-1000-8000-00805f9b34fb', c: '0000ff01-0000-1000-8000-00805f9b34fb', n: '0000ff02-0000-1000-8000-00805f9b34fb' },
-                coyote: { s: '0000180c-0000-1000-8000-00805f9b34fb', c: '0000150a-0000-1000-8000-00805f9b34fb' },
-                kiss:   { s: '0000cb60-0000-1000-8000-00805f9b34fb', c: '0000cb61-0000-1000-8000-00805f9b34fb' }
-            };
-            try {
-                const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: [cfg[t].s] });
-                const server = await device.gatt.connect();
-                const service = await server.getPrimaryService(cfg[t].s);
-                chars[t] = await service.getCharacteristic(cfg[t].c);
-                if (t === 'wonder') {
-                    const n = await service.getCharacteristic(cfg[t].n);
-                    await n.startNotifications();
-                    n.addEventListener('characteristicvaluechanged', e => {
-                        let p = e.target.value.getUint8(4);
-                        document.getElementById('p-now').innerText = p;
-                        document.getElementById('p-mini').innerText = p + " kPa";
-                        if (p >= document.getElementById('lab-th').value && document.getElementById('lab-lock').checked) punish();
-                    });
+        // 阶段一：强制禁断汪
+        function runStage1() {
+            currentStage = 1;
+            document.getElementById('monitor-card').classList.add('stage-active');
+            let timeLeft = parseInt(document.getElementById('time-lock').value) * 60;
+            
+            mainTimer = setInterval(() => {
+                timeLeft--;
+                updateDisplay(timeLeft);
+                if(timeLeft <= 0) {
+                    clearInterval(mainTimer);
+                    runStage2();
                 }
-                alert("汪！宝贝已就绪！");
-            } catch(e) { console.log(e); }
+            }, 1000);
+            
+            // 此阶段禁止关闭网页提示汪
+            window.onbeforeunload = () => "协议尚未完成，逃跑是要被惩罚的汪！";
         }
 
-        // 手动点放模式汪
-        async function islandStep(cmd, forceD = null) {
-            if(!chars.wonder) return;
-            if(forceD !== null) { await chars.wonder.writeValue(new Uint8Array([0xFF, cmd, forceD])); return; }
-            await chars.wonder.writeValue(new Uint8Array([0xFF, cmd, 0])); // 开启
-            setTimeout(async () => await chars.wonder.writeValue(new Uint8Array([0xFF, cmd, 1])), 500); // 500ms 自动关闭汪
+        // 阶段二：圣水洗礼汪
+        async function runStage2() {
+            currentStage = 2;
+            document.getElementById('current-stage-title').innerText = "阶段二：圣水洗礼灌注中...";
+            document.getElementById('current-stage-title').style.color = 'var(--blue)';
+            
+            let ml = parseInt(document.getElementById('water-ml').value);
+            let sec = (ml / 100) * 60; // 100ml/min 科学流速汪
+            
+            if(chars.wonder) await islandCmd(0xA3, 0); // 开泵汪！
+            
+            mainTimer = setInterval(() => {
+                sec--;
+                document.getElementById('main-timer').innerText = "灌注中: " + Math.floor(sec) + "s";
+                if(sec <= 0) {
+                    clearInterval(mainTimer);
+                    islandCmd(0xA3, 1); // 停泵汪
+                    runStage3();
+                }
+            }, 1000);
         }
 
-        function coyShift(ch, delta) {
-            coyVal[ch] = Math.max(0, Math.min(200, coyVal[ch] + delta));
-            document.getElementById('v-c' + ch).innerText = coyVal[ch];
-            coySend();
+        // 阶段三：终极释放汪
+        async function runStage3() {
+            currentStage = 3;
+            document.getElementById('current-stage-title').innerText = "阶段三：终极救赎！尽情享受吧汪！";
+            document.getElementById('current-stage-title').style.color = 'var(--green)';
+            document.getElementById('main-timer').innerText = "FREE";
+            document.getElementById('stage-desc').innerText = "禁断锁已解除，诱导强度已拉满汪！";
+            
+            let finalV = parseInt(document.getElementById('final-v').value);
+            if(chars.kiss) await chars.kiss.writeValue(new Uint8Array([0xAA, 0x02, 0x01, 0x00, 0x00, finalV]));
+            
+            window.onbeforeunload = null; // 释放后允许离开汪
+            alert("汪！奖励时间到！尽情高潮吧主人！💖");
         }
 
-        async function coySend() {
-            if(chars.coyote) {
-                let cmd = new Uint8Array(20).fill(0); cmd[0]=0xB0; cmd[1]=0x33;
-                cmd[2]=coyVal.a; cmd[3]=coyVal.b;
-                await chars.coyote.writeValue(cmd);
-            }
+        function updateDisplay(s) {
+            let m = Math.floor(s / 60); let sec = s % 60;
+            document.getElementById('main-timer').innerText = (m<10?'0':'')+m + ":" + (sec<10?'0':'')+sec;
         }
 
-        async function punish() {
-            if(chars.coyote) {
-                let cmd = new Uint8Array(20).fill(0); cmd[0]=0xB0; cmd[1]=0x33; cmd[2]=140; cmd[3]=140;
-                await chars.coyote.writeValue(cmd);
-                setTimeout(() => { coyVal.a=0; coyVal.b=0; coySend(); }, 3000);
-            }
-        }
-
-        function startScript(s) {
-            clearInterval(timer);
-            if(s === 'tide') {
-                let v = 0; let up = true;
-                timer = setInterval(() => { v=up?v+5:v-5; if(v>=100||v<=0) up=!up; coyVal.a=v; coySend(); }, 500);
-            } else if(s === 'chaos') {
-                timer = setInterval(() => { 
-                    coyVal.a = Math.random()*80; coySend();
-                    if(Math.random()>0.8) islandStep(0xA3, 2); 
-                }, 2000);
-            }
-        }
+        async function islandCmd(c, d) { if(chars.wonder) await chars.wonder.writeValue(new Uint8Array([0xFF, c, d])); }
+        // 蓝牙连接逻辑 (略，请主人确保已在连接页连好宝贝汪)...
     </script>
 </body>
 </html>
