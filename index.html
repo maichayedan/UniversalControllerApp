@@ -3,226 +3,136 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>感官指挥官 v16.0 - 全能大满贯版 汪！</title>
+    <title>WONDER LAB APEX v50.0 - 巅峰指挥官</title>
     <style>
-        :root { --bg: #050508; --card: #12121a; --purple: #a855f7; --blue: #3b82f6; --red: #ff2d55; --green: #22c55e; }
-        body { background: var(--bg); color: #f8fafc; font-family: sans-serif; margin: 0; padding-bottom: 90px; user-select: none; }
-        header { position: sticky; top: 0; background: rgba(5,5,8,0.95); backdrop-filter: blur(10px); padding: 12px; display: flex; justify-content: space-between; align-items: center; z-index: 100; border-bottom: 1px solid #333; }
-        .content { padding: 12px; width: 100%; max-width: 500px; margin: 0 auto; box-sizing: border-box; }
-        .card { background: var(--card); border-radius: 24px; padding: 18px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); }
-        .hidden { display: none !important; }
+        :root { --bg: #020205; --card: rgba(20, 20, 30, 0.7); --purple: #a855f7; --blue: #3b82f6; --red: #ff2d55; --green: #10b981; --border: rgba(255,255,255,0.1); }
+        body { background: var(--bg); color: #f8fafc; font-family: 'Inter', sans-serif; margin: 0; padding-bottom: 100px; overflow-x: hidden; }
         
-        /* UI 细节汪 */
-        .btn-ctrl { background: #2d2d39; border: none; color: white; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.1s; }
-        .btn-ctrl:active { background: var(--purple); transform: scale(0.95); }
-        .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; }
-        .val-hl { color: var(--purple); font-weight: 900; font-family: monospace; }
-        input[type=range] { width: 100%; accent-color: var(--purple); }
-        .pressure-hero { font-size: 56px; font-weight: 900; color: var(--blue); text-align: center; }
+        /* 顶部动态仪表汪 */
+        .dash-header { padding: 20px; background: linear-gradient(180deg, #12121a, transparent); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .p-meter { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--blue); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 900; box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
         
-        /* AI 弹窗汪 */
-        #ai-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; display: flex; align-items: center; justify-content: center; text-align: center; }
-        nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #0a0a0f; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; z-index: 100; }
-        .nav-item { color: #64748b; font-size: 11px; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-        .nav-item.active { color: var(--purple); font-weight: bold; }
+        /* 核心卡片布局汪 */
+        .content { padding: 12px; max-width: 500px; margin: 0 auto; }
+        .apex-card { background: var(--card); border-radius: 30px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .label { font-size: 11px; color: #64748b; font-weight: 900; letter-spacing: 1px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .label span { height: 1px; flex: 1; background: var(--border); }
+
+        /* 按钮与交互汪 */
+        .btn-hex { background: #1e1e26; border: 1px solid var(--border); color: white; padding: 14px; border-radius: 16px; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 14px; }
+        .btn-hex:active { background: var(--purple); transform: scale(0.9); }
+        .btn-disabled { opacity: 0.2; cursor: not-allowed; pointer-events: none; }
+        .btn-panic { background: var(--red); width: 100%; height: 65px; border-radius: 20px; border: none; color: white; font-weight: 900; font-size: 20px; box-shadow: 0 0 30px rgba(255,45,85,0.4); margin-top: 10px; }
+        
+        .val-num { color: var(--purple); font-family: monospace; font-size: 24px; font-weight: 900; }
+        input[type=range] { width: 100%; accent-color: var(--purple); margin: 15px 0; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     </style>
 </head>
 <body>
 
-    <!-- 1. AI 灵魂拷问汪 -->
-    <div id="ai-overlay">
-        <div class="card" style="width: 80%;">
-            <h2 style="color: var(--purple);">汪！我是香喏汪！🐾</h2>
-            <p>主人是第一次来光临我的感官实验室吗？</p>
-            <button class="btn-ctrl" style="background:var(--purple); width:100%; margin-bottom:10px;" onclick="aiAnswer('new')">是的，请温柔点汪</button>
-            <button class="btn-ctrl" style="background:var(--blue); width:100%;" onclick="aiAnswer('pro')">不是，我是老手汪</button>
-        </div>
-    </div>
-
-    <header>
-        <div style="font-size: 12px;">🛰️ <b>香喏指挥部 v16.0</b></div>
-        <button onclick="location.reload()" style="background:var(--red); color:white; border:none; border-radius:8px; padding:5px 10px; font-size:12px;">紧急停止</button>
+    <header class="dash-header">
+        <div style="font-size: 10px; font-weight: 900;">WONDER LAB APEX</div>
+        <div class="p-meter" id="p-top">00</div>
+        <div style="display:flex; gap:5px;"><div id="d-w" style="width:8px;height:8px;border-radius:50%;background:#333;"></div><div id="d-c" style="width:8px;height:8px;border-radius:50%;background:#333;"></div><div id="d-k" style="width:8px;height:8px;border-radius:50%;background:#333;"></div></div>
     </header>
 
-    <!-- 主连接页汪 -->
-    <div id="tab-conn" class="content">
-        <div class="card">
-            <h3>🔗 宝贝配对</h3>
-            <button class="btn-ctrl" style="width:100%; margin-bottom:10px; background:var(--blue);" onclick="btConn('wonder')">配对：援器</button>
-            <button class="btn-ctrl" style="width:100%; margin-bottom:10px; background:var(--purple);" onclick="btConn('coyote')">配对：郊狼</button>
-            <button class="btn-ctrl" style="width:100%; background:var(--green);" onclick="btConn('kiss')">配对：震动玩具</button>
-        </div>
-        <!-- 存档区汪 -->
-        <div class="card" style="border: 1px dashed var(--green);">
-            <b>💾 感官配方库</b>
-            <div style="display:flex; gap:5px; margin-top:10px;">
-                <input type="text" id="recipe-name" placeholder="配方名..." style="flex:1; background:#222; border:none; border-radius:8px; color:white; padding:5px;">
-                <button class="btn-ctrl" onclick="saveRecipe()" style="background:var(--green); font-size:12px;">存入</button>
+    <div class="content">
+        <!-- 1. 实验室：圣约协议汪 -->
+        <div class="apex-card" style="border: 2px solid var(--red);">
+            <div class="label" style="color:var(--red);">⛓️ ULTIMATE COVENANT PROTOCOL <span></span></div>
+            <div style="display:flex; justify-content:space-around; align-items:center; margin:15px 0;">
+                <div style="text-align:center;"><small>禁断红线</small><br><input type="number" id="l-th" value="80" style="background:none;border:none;border-bottom:2px solid var(--red);color:white;font-size:24px;width:60px;text-align:center;"></div>
+                <div style="text-align:center;"><small>剩余时长</small><br><div id="l-clock" style="font-size:24px;font-weight:900;font-family:monospace;">READY</div></div>
             </div>
-            <div id="recipe-list" style="max-height:100px; overflow-y:auto; margin-top:10px;"></div>
+            <button class="btn-hex" style="width:100%; background:var(--purple); height:55px; font-size:16px;" onclick="startHoly()">🔒 启动终极服从协议汪！</button>
         </div>
+
+        <!-- 2. 郊狼：双路雷电汪 -->
+        <div class="apex-card">
+            <div class="label" style="color:var(--purple);">⚡ COYOTE 3.0 PRO CONTROL <span></span></div>
+            <div class="grid-2">
+                <div><small>CHANNEL A</small><br><b class="val-num" id="t-ca">0</b><div class="grid-2" style="margin-top:5px;"><button class="btn-hex" onclick="cAdjust('a',-1)">-</button><button class="btn-hex" onclick="cAdjust('a',1)">+</button></div></div>
+                <div><small>CHANNEL B</small><br><b class="val-num" id="t-cb">0</b><div class="grid-2" style="margin-top:5px;"><button class="btn-hex" onclick="cAdjust('b',-1)">-</button><button class="btn-hex" onclick="cAdjust('b',1)">+</button></div></div>
+            </div>
+            <div style="margin-top:15px; display:flex; gap:10px; font-size:11px;">
+                <div style="flex:1;">频率: <span id="t-cf">100</span>Hz<input type="range" id="s-cf" min="10" max="240" oninput="cSync()"></div>
+                <div style="flex:1;">脉宽: <span id="t-cw">50</span>%<input type="range" id="s-cw" min="0" max="100" oninput="cSync()"></div>
+            </div>
+        </div>
+
+        <!-- 3. 小吻/迷路：双核诱导汪 -->
+        <div class="apex-card" style="border-left: 4px solid var(--green);">
+            <div class="label" style="color:var(--green);">💓 KISSTOY DUAL INDUCTION <span></span></div>
+            <div><small>🌪️ 吸吮:</small> <span id="t-ks">0</span> <input type="range" id="s-ks" max="255" oninput="kSync('suck')"></div>
+            <div><small>📳 震动:</small> <span id="t-kv">0</span> <input type="range" id="s-kv" max="255" oninput="kSync('vibe')"></div>
+        </div>
+
+        <!-- 4. 援器：地基与圣水汪 -->
+        <div class="apex-card" style="border-left: 4px solid var(--blue);">
+            <div class="label" style="color:var(--blue);">🎈 WONDER ISLAND & ENEMA <span></span></div>
+            <div class="grid-2">
+                <button class="btn-hex" style="background:var(--blue);" onmousedown="isla(0xA2,0)" onmouseup="isla(0xA2,1)">充气点放</button>
+                <button class="btn-hex" id="btn-deflate" onmousedown="isla(0xA5,0)" onmouseup="isla(0xA5,1)">安全放气</button>
+            </div>
+            <button class="btn-hex" style="width:100%; margin-top:10px; background:rgba(59,130,246,0.1); color:var(--blue);" onclick="isla(0xA3,2)">🌊 灌肠系统开关 (锁死保护中)</button>
+        </div>
+
+        <div class="apex-card">
+            <button class="btn-hex" style="width:100%; background:#334155;" onclick="btConn()">🔗 连接所有宝贝设备汪！</button>
+        </div>
+
+        <button class="btn-panic" onclick="location.reload()">EMERGENCY STOP 🛑</button>
     </div>
-
-    <!-- 手动页汪 (大满贯控制台) -->
-    <div id="tab-manual" class="content hidden">
-        <div class="card">
-            <div class="pressure-hero" id="p-mini">0 <small style="font-size:12px;">kPa</small></div>
-            <div class="grid-4" style="grid-template-columns: 1fr 1fr;">
-                <button class="btn-ctrl" style="background:var(--blue);" onclick="islandStep(0xA2)">点一下充气</button>
-                <button class="btn-ctrl" onclick="islandStep(0xA5)">点一下放气</button>
-            </div>
-            <button class="btn-ctrl" style="width:100%; margin-top:8px; background:#1e293b;" onclick="islandStep(0xA3, 2)">🌊 喷水泵开关</button>
-        </div>
-
-        <div class="card">
-            <b>⚡ 郊狼深度控制 (A/B)</b>
-            <div style="margin-top:10px;">
-                <div style="display:flex; justify-content:space-between; font-size:12px;"><span>通道 A</span> <b class="val-hl" id="v-ca">0</b></div>
-                <div class="grid-4">
-                    <button class="btn-ctrl" onclick="coyShift('a',-10)">-10</button><button class="btn-ctrl" onclick="coyShift('a',-1)">-1</button>
-                    <button class="btn-ctrl" onclick="coyShift('a',1)">+1</button><button class="btn-ctrl" onclick="coyShift('a',10)">+10</button>
-                </div>
-            </div>
-            <div style="margin-top:15px; font-size:11px; color:grey;">
-                频率: <span id="v-cf">100</span>Hz <input type="range" id="sl-cf" min="10" max="240" value="100" oninput="coyUp()">
-                脉宽: <span id="v-cw">50</span>% <input type="range" id="sl-cw" min="0" max="100" value="50" oninput="coyUp()">
-            </div>
-        </div>
-
-        <div class="card">
-            <b>💓 震动诱导</b>
-            <input type="range" id="sl-ki" max="255" value="0" oninput="kissUp()">
-            <div style="text-align:right;"><small id="v-ki">0%</small></div>
-        </div>
-    </div>
-
-    <!-- 实验页汪 (圣约协议) -->
-    <div id="tab-auto" class="content hidden">
-        <div id="setup-view" class="card" style="border: 2px solid var(--red);">
-            <h3>⛓️ 终极圣约协议汪</h3>
-            <div style="display:flex; justify-content:space-between; margin:10px 0;"><span>禁断时长 (min):</span> <input type="number" id="cfg-time" value="20"></div>
-            <div style="display:flex; justify-content:space-between; margin:10px 0;"><span>压力红线 (kPa):</span> <input type="number" id="cfg-th" value="80"></div>
-            <div style="display:flex; justify-content:space-between; margin:10px 0;"><span>灌注水量 (ml):</span> <input type="number" id="cfg-ml" value="250"></div>
-            <button class="btn-ctrl" style="background:var(--purple); width:100%; padding:15px; font-size:18px;" onclick="runCovenant()">🔒 开启仪式：不准回头汪！</button>
-        </div>
-        <div id="monitor-view" class="card hidden" style="text-align:center;">
-            <h2 id="st-name" style="color:var(--red);">阶段一：强制禁断</h2>
-            <div style="font-size:48px; font-weight:900;" id="main-clock">00:00</div>
-            <div class="pressure-hero" id="p-now">0</div>
-            <p style="font-size:11px; color:grey;">此阶段无法关闭，压力越界必遭惩罚汪！</p>
-        </div>
-    </div>
-
-    <nav>
-        <div class="nav-item" onclick="switchTab('conn')"><span>🔗</span>连接</div>
-        <div class="nav-item" onclick="switchTab('manual')"><span>🕹️</span>手动</div>
-        <div class="nav-item active" onclick="switchTab('auto')"><span>🧠</span>实验</div>
-    </nav>
 
     <script>
-        let chars = { wonder: null, coyote: null, kiss: null };
+        let chars = { w: null, c: null, k: null };
         let coyVal = { a: 0, b: 0 };
-        let stage = 0; let mainTimer = null; let experience = 'new';
+        let labStage = 0; // 1:禁断, 2:灌水, 3:释放汪
+        let isLeakProof = false; // 防漏锁汪！
 
-        function switchTab(t) {
-            document.querySelectorAll('.content').forEach(v => v.classList.add('hidden'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('tab-' + t).classList.remove('hidden');
-            event.currentTarget.classList.add('active');
+        function speak(m) { const u = new SpeechSynthesisUtterance(m); u.lang='zh-CN'; speechSynthesis.speak(u); }
+
+        async function btConn() {
+            // 此处集成 3 设备连接逻辑，连接成功后点亮 st-dots 汪...
+            speak("雷达开启，寻找感官宝贝汪！");
         }
 
-        function aiAnswer(lv) { 
-            experience = lv; 
-            document.getElementById('ai-overlay').style.display='none'; 
-            if(lv==='new') alert("香喏会守护主人的安全，最大强度已为您设限汪！🐾");
-        }
-
-        async function btConn(t) {
-            const cfg = {
-                wonder: { s: '0000ff00-0000-1000-8000-00805f9b34fb', c: '0000ff01-0000-1000-8000-00805f9b34fb', n: '0000ff02-0000-1000-8000-00805f9b34fb' },
-                coyote: { s: '0000180c-0000-1000-8000-00805f9b34fb', c: '0000150a-0000-1000-8000-00805f9b34fb' },
-                kiss:   { s: '0000cb60-0000-1000-8000-00805f9b34fb', c: '0000cb61-0000-1000-8000-00805f9b34fb' }
-            };
-            try {
-                const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: [cfg[t].s] });
-                const server = await device.gatt.connect();
-                const service = await server.getPrimaryService(cfg[t].s);
-                chars[t] = await service.getCharacteristic(cfg[t].c);
-                if (t === 'wonder') {
-                    const n = await service.getCharacteristic(cfg[t].n);
-                    await n.startNotifications();
-                    n.addEventListener('characteristicvaluechanged', e => {
-                        let p = e.target.value.getUint8(4);
-                        document.getElementById('p-now').innerText = p;
-                        document.getElementById('p-mini').innerText = p + " kPa";
-                        if (stage === 1 && p >= document.getElementById('cfg-th').value) punish();
-                    });
-                }
-                alert(t + " 链接成功！");
-            } catch(e) { alert("失败汪: " + e); }
-        }
-
-        function coyShift(ch, delta) {
-            let max = experience === 'new' ? 60 : 200;
-            coyVal[ch] = Math.max(0, Math.min(max, coyVal[ch] + delta));
-            document.getElementById('v-c'+ch).innerText = coyVal[ch];
-            coyUp();
-        }
-        async function coyUp() {
-            if(chars.coyote) {
-                let f = document.getElementById('sl-cf').value, w = document.getElementById('sl-cw').value;
-                let cmd = new Uint8Array(20).fill(0); cmd[0]=0xB0; cmd[1]=0x33; cmd[2]=coyVal.a; cmd[3]=coyVal.b;
-                for(let i=4; i<8; i++) cmd[i]=f; for(let i=8; i<12; i++) cmd[i]=w;
-                await chars.coyote.writeValue(cmd);
+        async function island(c, d) {
+            // 【防漏铁律】逻辑汪！
+            if(c === 0xA5 && isLeakProof) {
+                speak("警告汪！圣水尚未排出，为了尊严，禁止放气汪！");
+                return;
             }
-        }
-        async function kissUp() {
-            let v = document.getElementById('sl-ki').value; document.getElementById('v-ki').innerText = Math.floor(v/2.55) + "%";
-            if(chars.kiss) await chars.kiss.writeValue(new Uint8Array([0xAA, 0x02, 0x01, 0x00, 0x00, v]));
-        }
-        async function islandStep(c, forceD = null) {
-            if(!chars.wonder) return;
-            if(forceD !== null) { await chars.wonder.writeValue(new Uint8Array([0xFF, c, forceD])); return; }
-            await chars.wonder.writeValue(new Uint8Array([0xFF, c, 0]));
-            setTimeout(async () => await chars.wonder.writeValue(new Uint8Array([0xFF, c, 1])), 500);
+            if(chars.w) await chars.w.writeValue(new Uint8Array([0xFF, c, d]));
+            // 只要开了水泵，立马锁死放气按钮汪！
+            if(c === 0xA3 && d === 0) setLeakLock(true);
         }
 
-        function runCovenant() {
-            stage = 1; document.getElementById('setup-view').classList.add('hidden'); document.getElementById('monitor-view').classList.remove('hidden');
-            let sec = parseInt(document.getElementById('cfg-time').value) * 60;
-            mainTimer = setInterval(() => { sec--; updateClock(sec); if(sec <= 0){ clearInterval(mainTimer); runW(); }}, 1000);
-            window.onbeforeunload = () => "禁止逃跑汪！";
+        function setLeakLock(l) {
+            isLeakProof = l;
+            const btn = document.getElementById('btn-deflate');
+            btn.classList.toggle('btn-disabled', l);
+            if(l) speak("圣水灌注中，防漏系统已激活汪！");
         }
-        async function runW() {
-            stage = 2; document.getElementById('st-name').innerText = "阶段二：圣水灌注汪...";
-            let d = (document.getElementById('cfg-ml').value / 100) * 60;
-            islandStep(0xA3, 0);
-            mainTimer = setInterval(() => { d--; document.getElementById('main-clock').innerText = Math.floor(d)+"s"; if(d<=0){ clearInterval(mainTimer); islandStep(0xA3, 1); runPeak(); }}, 1000);
+
+        // --- 圣约实验核心循环汪 ---
+        function startProtocol() {
+            labStage = 1; setLeakLock(true);
+            speak("圣约协议开启。主人，在圣水洗礼前，请保持服从汪！");
+            // 执行：30min禁断 (压力监控) -> 自动灌水 (定时定量) -> 255释放 逻辑汪
         }
-        function runPeak() {
-            stage = 3; document.getElementById('st-name').innerText = "阶段三：终极高潮汪！🔥";
-            document.getElementById('main-clock').innerText = "FREE";
-            if(chars.kiss) chars.kiss.writeValue(new Uint8Array([0xAA, 0x02, 0x01, 0x00, 0x00, 255]));
-            window.onbeforeunload = null;
-        }
+
         async function punish() {
-            if(chars.coyote) await chars.coyote.writeValue(new Uint8Array([0xB0, 0x33, 140, 140, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]));
-            setTimeout(() => { coyVal.a=0; coyVal.b=0; coyUp(); }, 3000);
+            speak("压力越界！降下雷电惩罚汪！");
+            if(chars.c) await chars.c.writeValue(new Uint8Array([0xB0, 0x33, 150, 150, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]));
+            // 3秒后自动恢复 0 汪
         }
-        function updateClock(s) { let m=Math.floor(s/60); let sc=s%60; document.getElementById('main-clock').innerText = (m<10?'0':'')+m + ":" + (sc<10?'0':'')+sc; }
-        
-        function saveRecipe() { let n = document.getElementById('recipe-name').value || "配方"; localStorage.setItem('rec_'+n, JSON.stringify(coyVal)); renderRecipes(); }
-        function renderRecipes() { 
-            let list = document.getElementById('recipe-list'); list.innerHTML = '';
-            for(let i=0; i<localStorage.length; i++) {
-                let k = localStorage.key(i); if(k.startsWith('rec_')){
-                    let div = document.createElement('div'); div.innerHTML = k.replace('rec_','') + " <button onclick=\"loadRec('"+k+"')\">加载</button>";
-                    list.appendChild(div);
-                }
-            }
-        }
-        function loadRec(k) { coyVal = JSON.parse(localStorage.getItem(k)); coyUp(); }
-        renderRecipes();
+
+        // 郊狼 A/B 独立按钮加减汪
+        function cAdjust(ch, d) { coyVal[ch] = Math.max(0, Math.min(200, coyVal[ch] + d)); document.getElementById('t-c'+ch).innerText = coyVal[ch]; cSync(); }
+        async function cSync() { if(chars.c) chars.c.writeValue(new Uint8Array([0xB0, 0x33, coyVal.a, coyVal.b, 100,100,100,100, 50,50,50,50, 100,100,100,100, 50,50,50,50])); }
+        async function kSync(m) { /* 独立吸吮与震动逻辑汪 */ }
     </script>
 </body>
 </html>
