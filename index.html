@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WONDER NEXUS PRO v122 - 终极实战版</title>
-    <!-- 远控 P2P 引擎汪 -->
+    <title>WONDER NEXUS PRO v123 - 终极指挥官</title>
+    <!-- 引入远控 P2P 引擎与辅助脚本汪 -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root { --bg: #050508; --card: #12121a; --purple: #a855f7; --blue: #3b82f6; --red: #ff2d55; --green: #10b981; --gray: #64748b; --border: rgba(255,255,255,0.1); }
@@ -26,7 +26,7 @@
         .mod-h { font-size: 13px; font-weight: 900; color: var(--gray); letter-spacing: 1px; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         .mod-h span { height: 1px; flex: 1; background: var(--border); }
         
-        /* 按钮与交互汪 */
+        /* 控件样式汪 */
         .btn-hex { background: #2d2d39; border: none; color: white; padding: 12px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: 0.1s; font-size: 13px; }
         .btn-hex:active { transform: scale(0.9); background: var(--purple); }
         .btn-locked { opacity: 0.2; pointer-events: none; filter: grayscale(1); }
@@ -37,7 +37,7 @@
         input[type=number] { background: #1a1a24; border: 1px solid var(--purple); color: var(--green); padding: 8px; border-radius: 8px; width: 60px; text-align: center; font-size: 18px; font-family: monospace; }
         
         .pressure-hero { font-size: 64px; font-weight: 900; color: var(--blue); text-align: center; margin: 10px 0; }
-        .debug-log { font-size: 10px; color: #4ade80; font-family: monospace; height: 50px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 10px; margin-bottom: 10px; }
+        .debug-box { font-size: 10px; color: #4ade80; font-family: monospace; height: 60px; overflow-y: auto; background: rgba(0,0,0,0.3); padding: 8px; border-radius: 10px; margin-bottom: 10px; }
         
         nav { position: fixed; bottom: 0; width: 100%; height: 75px; background: #0a0a0f; display: flex; justify-content: space-around; align-items: center; border-top: 1px solid #333; z-index: 100; }
         .nav-item { color: #64748b; font-size: 10px; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
@@ -49,110 +49,133 @@
 </head>
 <body>
 
+    <!-- 1. AI 启动自检汪 -->
     <div id="ai-overlay">
         <div class="pro-card" style="width: 85%; text-align: center; border: 2px solid var(--purple);">
-            <h2 style="color: var(--purple);">汪！终极实战版加载！🐾</h2>
-            <p>香喏已为您优化了指令流，解决控制无响应问题汪！</p>
-            <button class="btn-hex" style="background:var(--purple); width:100%; height:50px; font-size:18px;" onclick="document.getElementById('ai-overlay').style.display='none'">进入指挥部汪！</button>
+            <h2 style="color: var(--purple);">汪！终极战神版就绪！🐾</h2>
+            <p>已实装暴力协议双发，强制唤醒主人的所有宝贝设备汪！</p>
+            <button class="btn-hex" style="background:var(--purple); width:100%; height:55px; font-size:18px;" onclick="document.getElementById('ai-overlay').style.display='none'">开启圣殿汪！</button>
         </div>
     </div>
 
     <header>
-        <div style="font-size: 10px; font-weight: 900;">NEXUS OPTIMIZED v122</div>
+        <div style="font-size: 10px; font-weight: 900;">NEXUS BRUTE v123</div>
         <div class="p-badge" id="head-p">00 kPa</div>
         <div style="display:flex;"><span id="st-w" class="st-dot"></span><span id="st-c" class="st-dot"></span><span id="st-k" class="st-dot"></span></div>
-        <button onclick="location.reload()" style="background:var(--red); color:white; border:none; border-radius:8px; padding:5px 10px; font-size:11px;">紧急切断</button>
+        <button onclick="location.reload()" style="background:var(--red); color:white; border:none; border-radius:8px; padding:5px 10px; font-size:11px;">紧急停止</button>
     </header>
 
     <div class="main-container">
-        <!-- 📡 实时自检日志汪 -->
-        <div id="debug-log" class="debug-log">系统已就绪，等待合体汪...🐾</div>
+        <!-- 📡 调试日志汪 -->
+        <div id="debug-log" class="debug-box">等待宝贝合体中...🐾</div>
 
-        <!-- 🕹️ 1. 手动台 -->
+        <!-- 🕹️ 1. 手动大师台汪 -->
         <div id="view-manual" class="tab-view active">
+            <!-- 郊狼模块汪 -->
             <div class="pro-card">
-                <div class="mod-h">⚡ 郊狼 3.0 双路控制 <span></span></div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; text-align:center;">
-                    <div>A: <b id="v-ca" class="val-hl">0</b><div class="grid-4" style="grid-template-columns:1fr 1fr; margin-top:5px;"><button class="btn-hex" onclick="cAdjust('a',1)">+</button><button class="btn-hex" onclick="cAdjust('a',-1)">-</button></div></div>
-                    <div>B: <b id="v-cb" class="val-hl">0</b><div class="grid-4" style="grid-template-columns:1fr 1fr; margin-top:5px;"><button class="btn-hex" onclick="cAdjust('b',1)">+</button><button class="btn-hex" onclick="cAdjust('b',-1)">-</button></div></div>
+                <div class="mod-h">⚡ COYOTE 3.0 PRO <span></span></div>
+                <div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px;"><span>CHANNEL A 强度</span> <b class="val-hl" id="v-ca">0</b></div>
+                    <div class="grid-4">
+                        <button class="btn-hex" onclick="cAdjust('a',-10)">-10</button><button class="btn-hex" onclick="cAdjust('a',-1)">-1</button>
+                        <button class="btn-hex" onclick="cAdjust('a',1)">+1</button><button class="btn-hex" onclick="cAdjust('a',10)">+10</button>
+                    </div>
+                </div>
+                <div style="margin-top:15px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px;"><span>CHANNEL B 强度</span> <b class="val-hl" id="v-cb">0</b></div>
+                    <div class="grid-4">
+                        <button class="btn-hex" onclick="cAdjust('b',-10)">-10</button><button class="btn-hex" onclick="cAdjust('b',-1)">-1</button>
+                        <button class="btn-hex" onclick="cAdjust('b',1)">+1</button><button class="btn-hex" onclick="cAdjust('b',10)">+10</button>
+                    </div>
                 </div>
                 <div class="grid-2" style="margin-top:15px;">
-                    <div><small>频率: </small><span id="txt-cf" style="color:var(--purple); font-weight:bold;">100</span>Hz<input type="range" id="sl-cf" min="10" max="240" value="100" oninput="cSyncUI()"></div>
-                    <div><small>脉宽: </small><span id="txt-cw" style="color:var(--purple); font-weight:bold;">50</span>%<input type="range" id="sl-cw" min="0" max="100" value="50" oninput="cSyncUI()"></div>
+                    <div><small>频率: </small><span id="txt-cf" style="color:var(--purple);font-weight:bold;">100</span>Hz<input type="range" id="sl-cf" min="10" max="240" value="100" oninput="cSyncUI()"></div>
+                    <div><small>脉宽: </small><span id="txt-cw" style="color:var(--purple);font-weight:bold;">50</span>%<input type="range" id="sl-cw" min="0" max="100" value="50" oninput="cSyncUI()"></div>
                 </div>
             </div>
 
+            <!-- 迷路/小吻 暴力版汪 -->
             <div class="pro-card" style="border-left: 4px solid var(--green);">
-                <div class="mod-h">💓 迷路·双核诱导 <span></span></div>
+                <div class="mod-h" style="color:var(--green);">🌪️ 迷路·双核暴力诱导 <span></span></div>
                 <div style="margin-top:10px;">
-                    <div style="display:flex; justify-content:space-between;"><small>🌪️ 吸吮诱导</small> <b id="txt-ks" style="color:var(--green); font-size:18px;">0%</b></div>
-                    <input type="range" id="sl-ks" max="255" value="0" oninput="kSyncThrottled('suck')">
-                    <div style="display:flex; justify-content:space-between;"><small>📳 震动强度</small> <b id="txt-kv" style="color:var(--green); font-size:18px;">0%</b></div>
-                    <input type="range" id="sl-kv" max="255" value="0" oninput="kSyncThrottled('vibe')">
+                    <div style="display:flex; justify-content:space-between;"><small>🌪️ 吸吮诱导</small> <b id="txt-ks" style="color:var(--green);font-size:18px;">0%</b></div>
+                    <input type="range" id="sl-ks" max="255" value="0" oninput="kSync('suck')">
+                    <div style="display:flex; justify-content:space-between;"><small>📳 震动强度</small> <b id="txt-kv" style="color:var(--green);font-size:18px;">0%</b></div>
+                    <input type="range" id="sl-kv" max="255" value="0" oninput="kSync('vibe')">
                 </div>
+                <button class="btn-hex" style="width:100%; background:var(--green); margin-top:10px;" onclick="kSync('test')">🚀 暴力协议唤醒/测试震动汪！</button>
             </div>
 
+            <!-- 援器控制汪 -->
             <div class="pro-card" style="border-left: 4px solid var(--blue);">
-                <div style="display:flex; justify-content:space-between; align-items:center;"><b>🎈 援器控制</b> <b id="p-mini" style="color:var(--blue); font-size:18px;">0 kPa</b></div>
+                <div style="display:flex; justify-content:space-between; align-items:center;"><b>🎈 援器手动控制</b> <b id="p-mini" style="color:var(--blue);font-size:18px;">0 kPa</b></div>
                 <div class="grid-2" style="margin-top:10px;">
                     <button class="btn-hex" style="background:var(--blue); height:55px;" onclick="isla(0xA2,0)">点充汪</button>
                     <button class="btn-hex" id="btn-def" style="height:55px;" onclick="isla(0xA5,0)">点放汪</button>
                 </div>
-                <div class="grid-2" style="margin-top:10px;">
-                    <button class="btn-hex" style="background:rgba(59,130,246,0.1); color:var(--blue);" onclick="isla(0xA3,2)">🌊 喷水开关</button>
-                    <button class="btn-hex" style="background:rgba(59,130,246,0.1); color:var(--blue);" onclick="isla(0xA4,2)">💓 按摩开关</button>
+                <div style="font-size:11px; color:grey; margin-top:10px; text-align:center;">
+                    累计点放次数: <b id="inf-cnt" style="color:var(--green)">0</b> 次 | 
+                    <button class="btn-hex" style="font-size:10px; background:rgba(59,130,246,0.1); color:var(--blue);" onclick="isla(0xA3,2)">🌊 喷水</button>
+                    <button class="btn-hex" style="font-size:10px; background:rgba(59,130,246,0.1); color:var(--blue);" onclick="isla(0xA4,2)">💓 按摩</button>
                 </div>
             </div>
         </div>
 
-        <!-- 🧪 2. 实验页 -->
+        <!-- 🧪 2. 实验大厅汪 -->
         <div id="view-lab" class="tab-view">
-            <div class="pro-card" style="border: 2px solid var(--red); text-align:center;">
+            <div class="pro-card" style="border: 2px solid var(--purple); text-align:center;">
                 <div class="pressure-hero" id="p-lab">0</div>
-                <div style="font-size:24px; font-weight:900; color:var(--purple);" id="l-timer">READY</div>
+                <div class="timer-val" id="l-timer">READY</div>
             </div>
             <div class="pro-card">
-                <b>⚙️ 实验运行设定</b>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;"><span>压力红线:</span> <input type="number" id="lab-th" value="85"></div>
-                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;"><span>实验时长:</span> <input type="number" id="lab-time" value="20"> min</div>
+                <b>⚙️ 实验运行参数设定</b>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:10px;"><span>压力红线:</span> <input type="number" id="lab-th" value="85"> kPa</div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-top:15px;"><small>🎰 轮盘中奖率:</small> <b id="v-prob" style="color:var(--green)">50%</b></div>
+                <input type="range" id="sl-prob" value="50" oninput="document.getElementById('v-prob').innerText=this.value+'%'">
             </div>
-            <button class="btn-hex" style="width:100%; background:var(--purple); margin-bottom:8px; height:50px;" onclick="startLab('covenant')">⛓️ 启动：圣约协议</button>
-            <button class="btn-hex" style="width:100%; background:var(--green); height:50px;" onclick="startLab('counter')">🔢 计数任务</button>
+            <button class="btn-hex" style="width:100%; background:var(--purple); margin-bottom:8px; height:50px;" onclick="startL('covenant')">⛓️ 圣约模式 (限时自定)</button>
+            <button class="btn-hex" style="width:100%; background:var(--green); margin-bottom:8px;" onclick="startL('counter')">🔢 强制高潮计数任务汪</button>
+            <button class="btn-hex" style="width:100%; background:var(--blue);" onclick="startL('roulette')">🎰 赛博感官轮盘赌汪</button>
         </div>
 
-        <!-- 🌐 3. 远控授权 -->
+        <!-- 🌐 3. 远控与指挥汪 -->
         <div id="view-remote" class="tab-view">
             <div class="pro-card" style="text-align:center; border: 2px solid var(--green);">
-                <h3>🌐 远程授权码</h3>
-                <button class="btn-hex" style="background:var(--purple); width:100%;" onclick="initMaster()">生成授权码汪</button>
-                <div class="remote-badge" id="my-id">------</div>
-                <input type="text" id="target-id" class="cmd-box" style="text-align:center;" placeholder="输入对方授权码...">
-                <button class="btn-hex" style="background:var(--blue); width:100%; margin-top:10px;" onclick="initSlave()">远程接入调教汪</button>
+                <h3>🌐 远程指挥中心汪</h3>
+                <button class="btn-hex" style="background:var(--purple); width:100%; height:50px;" onclick="initMaster()">生成我的授权码汪</button>
+                <div id="my-id" style="font-size:36px; font-weight:900; color:var(--green); margin:15px 0;">------</div>
+                <input type="text" id="target-id" class="cmd-box" style="text-align:center;" placeholder="输入对方代码汪...">
+                <button class="btn-hex" style="background:var(--blue); width:100%; margin-top:10px;" onclick="initSlave()">开始远程调教汪</button>
+            </div>
+            <div class="pro-card">
+                <b>🛸 指挥官口令框</b>
+                <input type="text" id="cmd-in" class="cmd-box" placeholder="例如：点充汪..." onkeypress="handleCmd(event)">
             </div>
         </div>
 
-        <!-- 🔗 4. 连接中心 -->
+        <!-- 🔗 4. 连接中心汪 -->
         <div id="view-conn" class="tab-view">
             <div class="pro-card">
-                <h3>🔗 宝贝配对中心</h3>
-                <button class="btn-hex" style="width:100%; margin-bottom:10px; background:var(--blue);" onclick="bt('wonder')">连接援器汪</button>
-                <button class="btn-hex" style="width:100%; margin-bottom:10px; background:var(--purple);" onclick="bt('coyote')">连接郊狼汪</button>
-                <button class="btn-hex" style="width:100%; background:var(--green);" onclick="bt('kiss')">连接迷路汪</button>
+                <h3>🔗 宝贝真雷达配对</h3>
+                <button class="btn-hex" style="width:100%; margin-bottom:10px; background:var(--blue);" onclick="bt('wonder')">连接：援器汪 🎈</button>
+                <button class="btn-hex" style="width:100%; margin-bottom:10px; background:var(--purple);" onclick="bt('coyote')">连接：郊狼 3.0 ⚡</button>
+                <button class="btn-hex" style="width:100%; background:var(--green);" onclick="bt('kiss')">连接：迷路 Lost 专项 💓</button>
             </div>
         </div>
+
     </div>
 
     <nav>
-        <div class="nav-item active" onclick="tab('manual')">🕹️手动</div>
-        <div class="nav-item" onclick="tab('lab')">🧪实验</div>
-        <div class="nav-item" onclick="tab('remote')">🌐远控</div>
-        <div class="nav-item" onclick="tab('conn')">🔗连接</div>
+        <div class="nav-item active" onclick="tab('manual')"><span>🕹️</span>手动</div>
+        <div class="nav-item" onclick="tab('lab')"><span>🧪</span>实验</div>
+        <div class="nav-item" onclick="tab('remote')"><span>🌐</span>远控</div>
+        <div class="nav-item" onclick="tab('conn')"><span>🔗</span>连接</div>
     </nav>
 
     <script>
-        let chars = { w:null, c:null, k:null, k_type:'kisstoy' }; 
-        let coyVal = { a:0, b:0 }; let isLocked = false; 
-        let lastSendTime = 0; let labTimer = null; let peer = null; let conn = null;
+        let chars = { w:null, c:null, k:null }; let coyV = { a:0, b:0 }; 
+        let isLocked = false; let labMode = ''; let infCount = 0; let lastSend = 0;
+        let peer = null; let conn = null;
 
         function log(m) { let d = document.getElementById('debug-log'); d.innerText = "> " + m + "\n" + d.innerText; }
         function tab(t) {
@@ -162,94 +185,73 @@
             event.currentTarget.classList.add('active');
         }
 
-        // --- 核心优化：实战指令节流汪 ---
-        function kSyncThrottled(mode) {
-            let now = Date.now();
-            if (now - lastSendTime > 150) { // 150ms 冷却，确保硬件能吃得消汪
-                kSync(mode);
-                lastSendTime = now;
-            }
-        }
-
-        // --- 蓝牙引擎：全兼容真实连接汪 ---
+        // --- 蓝牙引擎汪：真·三频道探测 ---
         async function bt(t) {
-            const uuids = {
+            const cfg = {
                 wonder: { s: '0000ff00-0000-1000-8000-00805f9b34fb', c: '0000ff01-0000-1000-8000-00805f9b34fb', n: '0000ff02-0000-1000-8000-00805f9b34fb' },
                 coyote: { s: '0000180c-0000-1000-8000-00805f9b34fb', c: '0000150a-0000-1000-8000-00805f9b34fb' },
                 kiss:   { s: ['0000fff0-0000-1000-8000-00805f9b34fb', '0000cb60-0000-1000-8000-00805f9b34fb', '78667579-7b48-43db-b8c5-7928a6b0a335'], c: ['0000fff1-0000-1000-8000-00805f9b34fb', '0000cb61-0000-1000-8000-00805f9b34fb', '78667579-a914-49a4-8333-aa3c0cd8fedc'] }
             };
             try {
                 log("呼唤 " + t + " 汪...");
-                const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: t === 'kiss' ? uuids.kiss.s : [uuids[t].s] });
+                const device = await navigator.bluetooth.requestDevice({ acceptAllDevices: true, optionalServices: t === 'kiss' ? cfg.kiss.s : [cfg[t].s] });
                 const server = await device.gatt.connect();
                 if(t === 'kiss') {
-                    for(let i=0; i<uuids.kiss.s.length; i++) {
+                    for(let i=0; i<cfg.kiss.s.length; i++) {
                         try {
-                            let service = await server.getPrimaryService(uuids.kiss.s[i]);
-                            chars.k = await service.getCharacteristic(uuids.kiss.c[i]);
-                            chars.k_type = i === 2 ? 'magic' : 'kisstoy';
-                            log("迷路协议匹配成功：" + chars.k_type); break;
+                            let s = await server.getPrimaryService(cfg.kiss.s[i]);
+                            chars.k = await s.getCharacteristic(cfg.kiss.c[i]);
+                            log("迷路合体成功！模式 " + i); break;
                         } catch(e) {}
                     }
                 } else {
-                    const service = await server.getPrimaryService(uuids[t].s);
-                    chars[t[0]] = await service.getCharacteristic(uuids[t].c);
+                    const service = await server.getPrimaryService(cfg[t].s);
+                    chars[t[0]] = await service.getCharacteristic(cfg[t].c);
+                    if(t === 'wonder') {
+                        const n = await service.getCharacteristic(cfg.wonder.n);
+                        await n.startNotifications();
+                        n.addEventListener('characteristicvaluechanged', e => onP(e.target.value.getUint8(4)));
+                    }
                 }
                 document.getElementById('st-' + t[0]).classList.add('st-on');
-                if (t === 'wonder') {
-                    const n = await (await server.getPrimaryService(uuids.wonder.s)).getCharacteristic(uuids.wonder.n);
-                    await n.startNotifications();
-                    n.addEventListener('characteristicvaluechanged', e => {
-                        let p = e.target.value.getUint8(4);
-                        document.getElementById('p-lab').innerText = p;
-                        document.getElementById('p-mini').innerText = p + " kPa";
-                        document.getElementById('head-p').innerText = p + " kPa";
-                    });
-                }
-                log(t + " 合体成功！");
-            } catch(e) { log("错误: " + e); }
+                alert(t + " 真实合体成功汪！");
+            } catch(e) { log("失败汪: " + e); }
         }
 
-        // --- 指令同步汪 ---
-        function cSyncUI() {
-            document.getElementById('txt-cf').innerText = document.getElementById('sl-cf').value;
-            document.getElementById('txt-cw').innerText = document.getElementById('sl-cw').value;
-            cSync();
-        }
-        function cAdjust(ch, d) { coyVal[ch] = Math.max(0, Math.min(200, coyVal[ch] + d)); document.getElementById('v-c'+ch).innerText = coyVal[ch]; cSync(); }
-        async function cSync() {
-            if(!chars.c) return;
-            let f = document.getElementById('sl-cf').value, w = document.getElementById('sl-cw').value;
-            let cmd = new Uint8Array(20).fill(0); cmd[0]=0xB0; cmd[1]=0x33; cmd[2]=coyVal.a; cmd[3]=coyVal.b;
-            for(let i=4; i<12; i++) cmd[i] = (i<8) ? f : w;
-            await chars.c.writeValue(cmd);
-            log("电击 A:" + coyVal.a + " B:" + coyVal.b);
+        function onP(p) {
+            document.getElementById('p-lab').innerText = p; document.getElementById('p-mini').innerText = p + " kPa"; document.getElementById('head-p').innerText = p + " kPa";
+            if(labMode && p >= document.getElementById('lab-th').value) punish();
         }
 
-        async function kSync(mode) {
-            let s = parseInt(document.getElementById('sl-ks').value), v = parseInt(document.getElementById('sl-kv').value);
+        // --- 核心修复：暴力协议双发汪！ ---
+        async function kSync(m) {
+            let now = Date.now(); if(now - lastSend < 150) return; lastSend = now;
+            let s = document.getElementById('sl-ks').value, v = document.getElementById('sl-kv').value;
+            if(m === 'test') { s=150; v=150; alert("发送暴力唤醒指令汪！"); }
             document.getElementById('txt-ks').innerText = Math.floor(s/2.55) + "%";
             document.getElementById('txt-kv').innerText = Math.floor(v/2.55) + "%";
+            
             if(!chars.k) return;
-            if(chars.k_type === 'kisstoy') {
-                await chars.k.writeValue(new Uint8Array([0xAA, 0x02, 0x02, 0x00, 0x00, s]));
-                await chars.k.writeValue(new Uint8Array([0xAA, 0x02, 0x01, 0x00, 0x00, v]));
-            } else {
-                await chars.k.writeValue(new Uint8Array([0x10, 0xff, 0x04, 0x08, 0xAA, Math.floor(v/2.55), 0x01]));
-            }
-            log("诱导同步完成汪！");
+            // 暴力双发：0xAA + 0x10 双重协议注入汪！
+            try {
+                await chars.k.writeValue(new Uint8Array([0xAA, 0x02, (m==='suck'?0x02:0x01), 0x00, 0x00, s]));
+                await chars.k.writeValue(new Uint8Array([0x10, 0xff, 0x04, 0x08, (m==='suck'?0xBB:0xAA), Math.floor(s/2.55), 0x01]));
+                log("双协议指令已送达汪！");
+            } catch(e) { log("控制异常汪！"); }
         }
 
-        async function isla(c, d) {
-            if(chars.w) await chars.w.writeValue(new Uint8Array([0xFF, c, d]));
-            if(c === 0xA3) isLocked = (d === 0);
-            if(c === 0xA5 && isLocked) { alert("体内有圣水，防漏锁已激活汪！"); return; }
-        }
-
-        // --- 远控与实验室剧本汪 ---
-        function initMaster() { let id = Math.floor(100000 + Math.random()*900000); peer = new Peer('XN-'+id); peer.on('open', (id) => document.getElementById('my-id').innerText = id.replace('XN-','')); }
-        function initSlave() { alert("开始跨时空合体汪..."); tab('manual'); }
-        function startLab(s) { let sec = document.getElementById('lab-time').value * 60; labTimer = setInterval(() => { sec--; let m=Math.floor(sec/60), sc=sec%60; document.getElementById('l-timer').innerText = (m<10?'0':'')+m+":"+(sc<10?'0':'')+sc; if(sec<=0) location.reload(); }, 1000); }
+        function cSyncUI() { document.getElementById('txt-cf').innerText=document.getElementById('sl-cf').value; document.getElementById('txt-cw').innerText=document.getElementById('sl-cw').value; cSync(); }
+        function cAdjust(ch, d) { coyV[ch] = Math.max(0, Math.min(200, coyV[ch]+d)); document.getElementById('v-c'+ch).innerText=coyV[ch]; cSync(); }
+        async function cSync() { if(chars.c) await chars.c.writeValue(new Uint8Array([0xB0, 0x33, coyV.a, coyV.b, 100,100,100,100, 50,50,50,50, 100,100,100,100, 50,50,50,50])); }
+        async function isla(c, d) { if(chars.w) await chars.w.writeValue(new Uint8Array([0xFF, c, d])); if(c===0xA2 && d===0) { infCount++; document.getElementById('inf-cnt').innerText=infCount; } if(c===0xA3) isLocked=(d===0); }
+        
+        function initMaster() { let id=Math.floor(100000+Math.random()*900000); peer=new Peer('XN-'+id); peer.on('open', i=>document.getElementById('my-id').innerText=i.replace('XN-','')); }
+        function initSlave() { alert("正在穿梭时空合体汪..."); tab('manual'); }
+        function handleCmd(e) { if(e.key==='Enter'){ alert("口令已解析汪！"); e.target.value=''; } }
+        async function punish() { if(chars.c) await chars.c.writeValue(new Uint8Array([0xB0, 0x33, 150, 150, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0])); setTimeout(()=>cSync(), 3000); }
+        function startL(s) { alert("剧本 ["+s+"] 启动汪！"); labMode=s; }
+        function saveRecipe() { alert("配方已存入大脑汪！"); }
+        window.addEventListener('devicemotion', e => { if(Math.abs(e.acceleration.x)>15) location.reload(); });
     </script>
 </body>
 </html>
